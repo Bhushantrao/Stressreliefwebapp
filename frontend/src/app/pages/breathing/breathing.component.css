@@ -1,0 +1,81 @@
+.max-w-700 { max-width: 700px; }
+.max-w-900 { max-width: 900px; }
+
+.technique-card {
+  border-color: var(--sl-border) !important;
+  transition: all 0.2s ease;
+}
+
+.technique-card.selected-tech {
+  background-color: var(--sl-primary-subtle) !important;
+  border-color: var(--sl-primary) !important;
+}
+
+.arena-card {
+  min-height: 480px;
+}
+
+.breathing-stage {
+  height: 300px;
+}
+
+.breathing-orb {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1), background 0.8s ease;
+  background: radial-gradient(circle at 35% 35%, #60a5fa, #3b82f6 60%, #1d4ed8 95%);
+}
+
+.breathing-orb.phase-inhale {
+  background: radial-gradient(circle at 35% 35%, #93c5fd, #3b82f6 55%, #2563eb 95%);
+  box-shadow: 0 0 50px rgba(59, 130, 246, 0.6);
+}
+
+.breathing-orb.phase-hold {
+  background: radial-gradient(circle at 35% 35%, #c084fc, #8b5cf6 55%, #6d28d9 95%);
+  box-shadow: 0 0 45px rgba(139, 92, 246, 0.55);
+}
+
+.breathing-orb.phase-exhale {
+  background: radial-gradient(circle at 35% 35%, #6ee7b7, #10b981 55%, #059669 95%);
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
+}
+
+.breathing-orb.phase-rest {
+  background: radial-gradient(circle at 35% 35%, #94a3b8, #64748b 55%, #475569 95%);
+  box-shadow: 0 0 30px rgba(100, 116, 139, 0.4);
+}
+
+.ripple-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(59, 130, 246, 0.25);
+  pointer-events: none;
+  transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ring-2 {
+  width: 220px;
+  height: 220px;
+}
+
+.ring-3 {
+  width: 260px;
+  height: 260px;
+  border-color: rgba(139, 92, 246, 0.15);
+}
+
+.phase-title {
+  font-size: 0.88rem;
+  letter-spacing: 0.1em;
+}
+
+.letter-spacing-1 {
+  letter-spacing: 0.12em;
+}

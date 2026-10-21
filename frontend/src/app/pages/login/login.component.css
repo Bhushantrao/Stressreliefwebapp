@@ -1,0 +1,21 @@
+.login-wrapper {
+  background-color: var(--sl-bg);
+}
+
+.login-logo-circle {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--sl-primary), var(--sl-lavender));
+  color: white;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+}
+
+.demo-login-box {
+  background-color: var(--sl-bg-alt);
+  border: 1px dashed var(--sl-border);
+}

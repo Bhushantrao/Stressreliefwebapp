@@ -1,0 +1,234 @@
+<div class="progress-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill small mb-2">
+          <i class="bi bi-graph-up-arrow me-1"></i> Mindfulness Milestones & Consistency
+        </div>
+        <h1 class="h2 fw-extrabold mb-1">Wellness Progress & Habits</h1>
+        <p class="text-muted small mb-0">Track your daily mindfulness consistency, active streaks, and personal self-care goals.</p>
+      </div>
+
+      <button class="btn btn-sl-primary mt-3 mt-md-0" (click)="openGoalModal()">
+        <i class="bi bi-flag-fill me-1"></i> Set New Goal
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted small mt-2">Loading your wellness metrics...</p>
+    </div>
+
+    <ng-container *ngIf="!isLoading && report">
+      <!-- 1. Top Stat Cards -->
+      <div class="row g-4 mb-4">
+        <!-- Streak Card -->
+        <div class="col-md-3 col-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="streak-icon text-danger mb-2">
+              <i class="bi bi-fire fs-2"></i>
+            </div>
+            <div class="display-6 fw-bold mb-0 text-danger">{{ report.streakDays }}</div>
+            <div class="text-muted small fw-semibold text-uppercase">Day Streak</div>
+          </div>
+        </div>
+
+        <!-- Breathing Minutes -->
+        <div class="col-md-3 col-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="streak-icon text-primary mb-2">
+              <i class="bi bi-wind fs-2"></i>
+            </div>
+            <div class="display-6 fw-bold mb-0 text-primary">{{ report.totalBreathingMinutes }}</div>
+            <div class="text-muted small fw-semibold text-uppercase">Breathing Mins</div>
+            <div class="text-muted" style="font-size: 0.7rem;">{{ report.totalBreathingSessions }} sessions</div>
+          </div>
+        </div>
+
+        <!-- Meditation Minutes -->
+        <div class="col-md-3 col-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="streak-icon text-success mb-2">
+              <i class="bi bi-flower1 fs-2"></i>
+            </div>
+            <div class="display-6 fw-bold mb-0 text-success">{{ report.totalMeditationMinutes }}</div>
+            <div class="text-muted small fw-semibold text-uppercase">Meditation Mins</div>
+            <div class="text-muted" style="font-size: 0.7rem;">{{ report.totalMeditationSessions }} completions</div>
+          </div>
+        </div>
+
+        <!-- Goal Completion Rate -->
+        <div class="col-md-3 col-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="streak-icon text-warning mb-2">
+              <i class="bi bi-trophy-fill fs-2"></i>
+            </div>
+            <div class="display-6 fw-bold mb-0 text-warning">{{ report.overallGoalCompletionPercentage }}%</div>
+            <div class="text-muted small fw-semibold text-uppercase">Goals Met</div>
+            <div class="text-muted" style="font-size: 0.7rem;">{{ report.goals.length }} total set</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Weekly Activity Chart -->
+      <div class="sl-card mb-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="h5 fw-bold mb-0">Past 7 Days Activity Heatmap</h4>
+          <div class="d-flex align-items-center gap-3 small text-muted">
+            <span class="d-flex align-items-center gap-1">
+              <span class="legend-box bg-primary"></span> Breathing (mins)
+            </span>
+            <span class="d-flex align-items-center gap-1">
+              <span class="legend-box bg-success"></span> Meditation (mins)
+            </span>
+          </div>
+        </div>
+
+        <!-- Visual Bar Chart -->
+        <div class="chart-container d-flex justify-content-between align-items-end pt-4 pb-2 px-2" style="height: 180px;">
+          <div *ngFor="let item of report.weeklyActivityChart" class="chart-column text-center flex-fill">
+            <!-- Bars wrapper -->
+            <div class="d-flex justify-content-center align-items-end gap-1 mb-2" style="height: 120px;">
+              <!-- Breathing Bar -->
+              <div class="activity-bar bg-primary rounded-top"
+                   [style.height.%]="(item.breathingMins / getMaxBarHeight() * 100)"
+                   [title]="'Breathing: ' + item.breathingMins + ' mins'">
+              </div>
+              <!-- Meditation Bar -->
+              <div class="activity-bar bg-success rounded-top"
+                   [style.height.%]="(item.meditationMins / getMaxBarHeight() * 100)"
+                   [title]="'Meditation: ' + item.meditationMins + ' mins'">
+              </div>
+            </div>
+            <div class="day-label small fw-semibold">{{ item.day }}</div>
+            <div class="text-muted" style="font-size: 0.7rem;">{{ item.checkins }} check-in</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Personal Wellness Goals -->
+      <div class="sl-card mb-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="h5 fw-bold mb-0">Your Active Wellness Goals</h4>
+          <button class="btn btn-sm btn-sl-outline" (click)="openGoalModal()">+ Add Goal</button>
+        </div>
+
+        <div *ngIf="report.goals.length === 0" class="text-center py-4 text-muted small">
+          No wellness goals defined yet. Set a simple daily target like 10 minutes of breathing to jumpstart your progress!
+        </div>
+
+        <div class="row g-3" *ngIf="report.goals.length > 0">
+          <div class="col-md-6" *ngFor="let goal of report.goals">
+            <div class="p-3 rounded-4 border h-100 d-flex flex-column"
+                 [ngClass]="goal.completed ? 'bg-success-subtle border-success-subtle' : 'bg-alt border-sl'">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="badge rounded-pill small"
+                      [ngClass]="goal.completed ? 'bg-success text-white' : 'bg-primary-subtle text-primary border border-primary-subtle'">
+                  <i class="bi" [ngClass]="goal.completed ? 'bi-check-all' : 'bi-hourglass-split'"></i>
+                  {{ goal.completed ? 'Completed' : goal.period }}
+                </span>
+                <span class="text-muted small" style="font-size: 0.75rem;">Due: {{ goal.targetDate }}</span>
+              </div>
+
+              <h5 class="h6 fw-bold mb-1" [ngClass]="{ 'text-decoration-line-through text-muted': goal.completed }">
+                {{ goal.title }}
+              </h5>
+
+              <div class="mt-auto pt-2">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                  <span>Progress</span>
+                  <span class="fw-bold">{{ goal.currentValue }} / {{ goal.targetValue }}</span>
+                </div>
+                <div class="progress mb-2" style="height: 8px;">
+                  <div class="progress-bar" role="progressbar"
+                       [ngClass]="goal.completed ? 'bg-success' : 'bg-primary'"
+                       [style.width.%]="(goal.currentValue / goal.targetValue * 100)"></div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-1">
+                  <button *ngIf="!goal.completed" class="btn btn-sm btn-outline-primary py-0 px-2" style="font-size: 0.75rem;"
+                          (click)="incrementProgress(goal, 1)">
+                    +1 Step
+                  </button>
+                  <span *ngIf="goal.completed" class="text-success small fw-semibold">
+                    <i class="bi bi-award-fill me-1"></i> Goal Achieved!
+                  </span>
+
+                  <button class="btn btn-sm text-danger p-0 border-0 ms-auto" (click)="deleteGoal(goal.id)" title="Delete goal">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Goal Creation Modal Backdrop -->
+    <div class="modal-backdrop-custom" *ngIf="isGoalModalOpen">
+      <div class="modal-dialog-custom sl-card shadow-lg p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="h5 fw-bold mb-0">Set New Wellness Goal</h4>
+          <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="closeGoalModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div *ngIf="goalError" class="alert alert-danger py-2 px-3 small border-0 mb-3">
+          {{ goalError }}
+        </div>
+
+        <form (ngSubmit)="saveGoal()">
+          <div class="mb-3">
+            <label for="gTitle" class="form-label small fw-semibold">Goal Title / Habit</label>
+            <input type="text" id="gTitle" class="form-control sl-input"
+                   [(ngModel)]="goalTitle" name="title" required placeholder="e.g. Daily Box Breathing (10 mins)">
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="gType" class="form-label small fw-semibold">Target Activity</label>
+              <select id="gType" class="form-select sl-input" [(ngModel)]="goalTargetType" name="targetType">
+                <option value="BREATHING_MINUTES">Breathing Minutes</option>
+                <option value="MEDITATION_MINUTES">Meditation Minutes</option>
+                <option value="MOOD_CHECKINS">Daily Mood Check-ins</option>
+                <option value="JOURNAL_ENTRIES">Journal Entries</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="gVal" class="form-label small fw-semibold">Target Count / Minutes</label>
+              <input type="number" id="gVal" class="form-control sl-input" min="1"
+                     [(ngModel)]="goalTargetValue" name="targetValue" required>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <label for="gPeriod" class="form-label small fw-semibold">Frequency</label>
+              <select id="gPeriod" class="form-select sl-input" [(ngModel)]="goalPeriod" name="period">
+                <option value="DAILY">Daily</option>
+                <option value="WEEKLY">Weekly</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="gDate" class="form-label small fw-semibold">Target Completion Date</label>
+              <input type="date" id="gDate" class="form-control sl-input"
+                     [(ngModel)]="goalTargetDate" name="targetDate" required>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-sl-outline" (click)="closeGoalModal()">Cancel</button>
+            <button type="submit" class="btn btn-sl-primary px-4" [disabled]="isSavingGoal">
+              <span *ngIf="isSavingGoal" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Save Goal
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

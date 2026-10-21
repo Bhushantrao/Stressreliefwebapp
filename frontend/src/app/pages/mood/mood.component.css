@@ -1,0 +1,24 @@
+.mood-select-btn {
+  background-color: var(--sl-bg-alt);
+  border-color: var(--sl-border) !important;
+  color: var(--sl-text);
+  transition: all 0.2s ease;
+}
+
+.mood-select-btn:hover {
+  background-color: var(--sl-primary-subtle);
+  border-color: var(--sl-primary-border) !important;
+}
+
+.mood-select-btn.active-mood {
+  background-color: var(--sl-primary-subtle) !important;
+  border-color: var(--sl-primary) !important;
+}
+
+.timeline-chip {
+  transition: transform 0.2s ease;
+}
+
+.timeline-chip:hover {
+  transform: translateY(-2px);
+}

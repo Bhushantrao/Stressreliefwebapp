@@ -1,0 +1,59 @@
+.session-img-wrapper {
+  height: 200px;
+  overflow: hidden;
+}
+
+.session-img {
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.sl-card:hover .session-img {
+  transform: scale(1.05);
+}
+
+.btn-play-overlay {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #10b981;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-play-overlay:hover {
+  background: #ffffff;
+  transform: scale(1.1);
+  color: #059669;
+}
+
+.instructions-box {
+  background-color: var(--sl-bg-alt);
+  border: 1px dashed var(--sl-border);
+}
+
+.floating-player {
+  background-color: var(--sl-bg-card);
+  backdrop-filter: blur(16px);
+  border-color: var(--sl-border) !important;
+}
+
+.player-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+}
+
+.max-w-700 {
+  max-width: 700px;
+}

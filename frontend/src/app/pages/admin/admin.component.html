@@ -1,0 +1,465 @@
+<div class="admin-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <div class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill small mb-2">
+          <i class="bi bi-shield-lock-fill me-1"></i> Authorized Administrators Only
+        </div>
+        <h1 class="h2 fw-extrabold mb-1">Platform Control & Content Management</h1>
+        <p class="text-muted small mb-0">Oversee global wellness resources, track platform activity metrics, and manage catalog sessions.</p>
+      </div>
+    </div>
+
+    <!-- Feedback Message Alert -->
+    <div *ngIf="feedbackMessage" class="alert alert-success alert-dismissible fade show text-center py-2 px-3 small border-0 mb-4">
+      <i class="bi bi-check-circle-fill me-1"></i> {{ feedbackMessage }}
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills mb-4 gap-2">
+      <li class="nav-item">
+        <button class="nav-link" [ngClass]="{ 'active': activeTab === 'stats' }" (click)="activeTab = 'stats'">
+          <i class="bi bi-speedometer2 me-1"></i> Platform Metrics
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [ngClass]="{ 'active': activeTab === 'meditations' }" (click)="activeTab = 'meditations'">
+          <i class="bi bi-flower1 me-1"></i> Meditation Sessions ({{ meditations.length }})
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [ngClass]="{ 'active': activeTab === 'sounds' }" (click)="activeTab = 'sounds'">
+          <i class="bi bi-music-note-beamed me-1"></i> Relaxation Sounds ({{ sounds.length }})
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [ngClass]="{ 'active': activeTab === 'quotes' }" (click)="activeTab = 'quotes'">
+          <i class="bi bi-quote me-1"></i> Motivational Quotes ({{ quotes.length }})
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [ngClass]="{ 'active': activeTab === 'users' }" (click)="activeTab = 'users'">
+          <i class="bi bi-people me-1"></i> Users Overview ({{ users.length }})
+        </button>
+      </li>
+    </ul>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted small mt-2">Loading platform statistics...</p>
+    </div>
+
+    <!-- TAB 1: Platform Metrics -->
+    <div *ngIf="activeTab === 'stats' && stats && !isLoading">
+      <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="stat-icon text-primary mb-2"><i class="bi bi-people fs-2"></i></div>
+            <div class="display-6 fw-bold mb-0 text-primary">{{ stats.totalUsers }}</div>
+            <div class="text-muted small fw-semibold text-uppercase">Registered Users</div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="stat-icon text-success mb-2"><i class="bi bi-wind fs-2"></i></div>
+            <div class="display-6 fw-bold mb-0 text-success">{{ stats.totalBreathingSessionsCompleted }}</div>
+            <div class="text-muted small fw-semibold text-uppercase">Breathing Sessions Run</div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="stat-icon text-warning mb-2"><i class="bi bi-headset fs-2"></i></div>
+            <div class="display-6 fw-bold mb-0 text-warning">{{ stats.totalMeditationCompletions }}</div>
+            <div class="text-muted small fw-semibold text-uppercase">Meditation Completions</div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <div class="sl-card text-center p-3 h-100">
+            <div class="stat-icon text-info mb-2"><i class="bi bi-emoji-smile fs-2"></i></div>
+            <div class="display-6 fw-bold mb-0 text-info">{{ stats.totalMoodLogs }}</div>
+            <div class="text-muted small fw-semibold text-uppercase">Mood Check-ins</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Inventory -->
+      <div class="sl-card p-4">
+        <h5 class="fw-bold fs-6 mb-3">Live Content Inventory</h5>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="p-3 rounded-3" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Guided Meditations:</span>
+                <strong class="fs-5 text-primary">{{ stats.totalMeditationSessions }}</strong>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Relaxation Sounds:</span>
+                <strong class="fs-5 text-success">{{ stats.totalRelaxationResources }}</strong>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3 rounded-3" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Motivational Quotes:</span>
+                <strong class="fs-5 text-warning">{{ stats.totalQuotes }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Meditations Management -->
+    <div *ngIf="activeTab === 'meditations'">
+      <div class="sl-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="h5 fw-bold mb-0">Guided Meditation Sessions</h4>
+          <button class="btn btn-sm btn-sl-primary" (click)="openCreateMeditation()">
+            <i class="bi bi-plus-lg me-1"></i> Add Meditation
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Title & Category</th>
+                <th>Duration</th>
+                <th>Difficulty</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of meditations">
+                <td>
+                  <div class="fw-bold">{{ m.title }}</div>
+                  <span class="badge bg-light text-muted border rounded-pill">{{ m.category }}</span>
+                </td>
+                <td>{{ m.durationMinutes }} mins</td>
+                <td>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                    {{ m.difficulty }}
+                  </span>
+                </td>
+                <td class="text-muted text-truncate" style="max-width: 250px;">{{ m.description }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary p-1 rounded-circle" (click)="openEditMeditation(m)">
+                      <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger p-1 rounded-circle" (click)="deleteMeditation(m.id)">
+                      <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Relaxation Sounds Management -->
+    <div *ngIf="activeTab === 'sounds'">
+      <div class="sl-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="h5 fw-bold mb-0">Relaxation Sounds & Music</h4>
+          <button class="btn btn-sm btn-sl-primary" (click)="openCreateSound()">
+            <i class="bi bi-plus-lg me-1"></i> Add Sound
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Audio Stream URL</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of sounds">
+                <td class="fw-bold">{{ s.title }}</td>
+                <td>
+                  <span class="badge bg-light text-muted border rounded-pill">{{ s.category }}</span>
+                </td>
+                <td class="text-muted text-truncate" style="max-width: 300px;">{{ s.audioUrl }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary p-1 rounded-circle" (click)="openEditSound(s)">
+                      <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger p-1 rounded-circle" (click)="deleteSound(s.id)">
+                      <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: Motivational Quotes Management -->
+    <div *ngIf="activeTab === 'quotes'">
+      <div class="sl-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="h5 fw-bold mb-0">Motivational Quotes</h4>
+          <button class="btn btn-sm btn-sl-primary" (click)="openCreateQuote()">
+            <i class="bi bi-plus-lg me-1"></i> Add Quote
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Quote Text</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let q of quotes">
+                <td class="fst-italic text-truncate" style="max-width: 350px;">"{{ q.quoteText }}"</td>
+                <td class="fw-semibold">{{ q.author }}</td>
+                <td>
+                  <span class="badge bg-light text-muted border rounded-pill">{{ q.category }}</span>
+                </td>
+                <td>
+                  <span class="badge rounded-pill" [ngClass]="q.active ? 'bg-success-subtle text-success' : 'bg-secondary'">
+                    {{ q.active ? 'Active' : 'Disabled' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary p-1 rounded-circle" (click)="openEditQuote(q)">
+                      <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger p-1 rounded-circle" (click)="deleteQuote(q.id)">
+                      <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: Users Overview -->
+    <div *ngIf="activeTab === 'users'">
+      <div class="sl-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h4 class="h5 fw-bold mb-1">Registered Users</h4>
+            <p class="text-muted small mb-0">Privacy Notice: Private journals and personal mood text are strictly excluded from administrator views.</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Member Since</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of users">
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img [src]="u.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80'"
+                         class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;" alt="Avatar">
+                    <span class="fw-bold">{{ u.name }}</span>
+                  </div>
+                </td>
+                <td class="text-muted">{{ u.email }}</td>
+                <td>
+                  <span class="badge rounded-pill" [ngClass]="u.role === 'ROLE_ADMIN' ? 'bg-primary' : 'bg-secondary'">
+                    {{ u.role === 'ROLE_ADMIN' ? 'Administrator' : 'Standard Member' }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ u.createdAt | date:'mediumDate' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote Modal Backdrop -->
+  <div class="modal-backdrop-custom" *ngIf="isQuoteModalOpen">
+    <div class="modal-dialog-custom sl-card shadow-lg p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="h5 fw-bold mb-0">{{ editingQuoteId ? 'Edit Quote' : 'New Motivational Quote' }}</h4>
+        <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="isQuoteModalOpen = false">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveQuote()">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Quote Text</label>
+          <textarea class="form-control sl-input" rows="3" [(ngModel)]="quoteText" name="quoteText" required placeholder="Enter quote words..."></textarea>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label small fw-semibold">Author</label>
+            <input type="text" class="form-control sl-input" [(ngModel)]="quoteAuthor" name="quoteAuthor" placeholder="e.g. Thich Nhat Hanh">
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label small fw-semibold">Category</label>
+            <input type="text" class="form-control sl-input" [(ngModel)]="quoteCategory" name="quoteCategory" placeholder="e.g. Mindfulness, Peace">
+          </div>
+        </div>
+
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" id="quoteActiveCheck" [(ngModel)]="quoteActive" name="quoteActive">
+          <label class="form-check-label small" for="quoteActiveCheck">Active in Daily Quote rotation</label>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-sl-outline" (click)="isQuoteModalOpen = false">Cancel</button>
+          <button type="submit" class="btn btn-sl-primary px-4">Save Quote</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Meditation Modal Backdrop -->
+  <div class="modal-backdrop-custom" *ngIf="isMeditationModalOpen">
+    <div class="modal-dialog-custom sl-card shadow-lg p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="h5 fw-bold mb-0">{{ editingMedId ? 'Edit Meditation Session' : 'New Meditation Session' }}</h4>
+        <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="isMeditationModalOpen = false">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveMeditation()">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Session Title</label>
+          <input type="text" class="form-control sl-input" [(ngModel)]="medTitle" name="medTitle" required placeholder="e.g. Morning Clarity">
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-sm-4">
+            <label class="form-label small fw-semibold">Category</label>
+            <select class="form-select sl-input" [(ngModel)]="medCategory" name="medCategory">
+              <option value="Mindfulness">Mindfulness</option>
+              <option value="Stress">Stress</option>
+              <option value="Sleep">Sleep</option>
+              <option value="Anxiety">Anxiety</option>
+              <option value="Focus">Focus</option>
+            </select>
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label small fw-semibold">Duration (Mins)</label>
+            <input type="number" class="form-control sl-input" min="1" [(ngModel)]="medDuration" name="medDuration" required>
+          </div>
+          <div class="col-sm-4">
+            <label class="form-label small fw-semibold">Difficulty</label>
+            <select class="form-select sl-input" [(ngModel)]="medDifficulty" name="medDifficulty">
+              <option value="BEGINNER">Beginner</option>
+              <option value="INTERMEDIATE">Intermediate</option>
+              <option value="ADVANCED">Advanced</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Description</label>
+          <textarea class="form-control sl-input" rows="2" [(ngModel)]="medDesc" name="medDesc" required></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Audio Stream / MP3 URL</label>
+          <input type="url" class="form-control sl-input" [(ngModel)]="medAudioUrl" name="medAudioUrl" placeholder="https://cdn.example.com/audio.mp3">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Cover Image URL</label>
+          <input type="url" class="form-control sl-input" [(ngModel)]="medImageUrl" name="medImageUrl" placeholder="https://images.unsplash.com/photo-...">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold">Mindful Instructions</label>
+          <textarea class="form-control sl-input" rows="2" [(ngModel)]="medInstructions" name="medInstructions" placeholder="e.g. Sit tall, close eyes, release jaw..."></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-sl-outline" (click)="isMeditationModalOpen = false">Cancel</button>
+          <button type="submit" class="btn btn-sl-primary px-4">Save Session</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sound Modal Backdrop -->
+  <div class="modal-backdrop-custom" *ngIf="isSoundModalOpen">
+    <div class="modal-dialog-custom sl-card shadow-lg p-4 p-md-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="h5 fw-bold mb-0">{{ editingSoundId ? 'Edit Sound Resource' : 'New Relaxation Sound' }}</h4>
+        <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="isSoundModalOpen = false">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveSound()">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Sound Title</label>
+          <input type="text" class="form-control sl-input" [(ngModel)]="soundTitle" name="soundTitle" required placeholder="e.g. Rolling Forest Thunder">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Sound Category</label>
+          <select class="form-select sl-input" [(ngModel)]="soundCategory" name="soundCategory">
+            <option value="RAIN">Rain</option>
+            <option value="OCEAN">Ocean</option>
+            <option value="FOREST">Forest</option>
+            <option value="NIGHT">Night / Campfire</option>
+            <option value="PIANO">Piano</option>
+            <option value="MEDITATION_MUSIC">Meditation / Binaural</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Audio Source URL</label>
+          <input type="url" class="form-control sl-input" [(ngModel)]="soundAudioUrl" name="soundAudioUrl" required placeholder="https://cdn.example.com/sound.mp3">
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label small fw-semibold">Description</label>
+          <input type="text" class="form-control sl-input" [(ngModel)]="soundDesc" name="soundDesc" placeholder="e.g. Soft continuous rain with distant thunder">
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-sl-outline" (click)="isSoundModalOpen = false">Cancel</button>
+          <button type="submit" class="btn btn-sl-primary px-4">Save Sound</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

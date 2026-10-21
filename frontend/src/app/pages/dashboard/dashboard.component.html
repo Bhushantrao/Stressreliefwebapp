@@ -1,0 +1,311 @@
+<div class="dashboard-page py-4">
+  <div class="container">
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading dashboard...</span>
+      </div>
+      <p class="text-muted small mt-2">Loading your wellness dashboard...</p>
+    </div>
+
+    <!-- Error Alert -->
+    <div *ngIf="errorMessage && !isLoading" class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ errorMessage }}</span>
+      <button class="btn btn-sm btn-outline-danger ms-auto" (click)="loadDashboardData()">Retry</button>
+    </div>
+
+    <ng-container *ngIf="!isLoading && stats">
+      <!-- 1. Personalized Welcome Banner -->
+      <div class="welcome-banner p-4 p-md-5 rounded-4 mb-4 position-relative overflow-hidden shadow-sm">
+        <div class="row align-items-center position-relative z-1">
+          <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-2 text-primary fw-semibold small mb-2 text-uppercase">
+              <i class="bi bi-sun-fill text-warning"></i> Daily Check-in
+            </div>
+            <h1 class="h2 fw-extrabold mb-2">{{ stats.welcomeMessage }}</h1>
+            <p class="text-muted mb-3" style="max-width: 600px;">
+              Take a few moments today to tune into your breathing and honor your mental health. Small pauses create lasting clarity.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2">
+              <a routerLink="/breathing" class="btn btn-sl-primary btn-sm px-3">
+                <i class="bi bi-wind me-1"></i> 5-Min Breathing
+              </a>
+              <a routerLink="/meditation" class="btn btn-sl-sage btn-sm px-3">
+                <i class="bi bi-flower1 me-1"></i> Meditation
+              </a>
+              <a routerLink="/music" class="btn btn-sl-lavender btn-sm px-3">
+                <i class="bi bi-music-note-beamed me-1"></i> Relaxing Sounds
+              </a>
+              <a routerLink="/assessment" class="btn btn-sl-outline btn-sm px-3">
+                <i class="bi bi-clipboard2-pulse me-1"></i> Stress Check
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-4 text-center mt-4 mt-lg-0">
+            <div class="streak-card p-3 rounded-4 mx-auto text-center">
+              <div class="streak-flame mb-1">
+                <i class="bi bi-fire text-danger"></i>
+              </div>
+              <div class="display-6 fw-bold mb-0">{{ stats.currentStreakDays }}</div>
+              <div class="text-muted small fw-semibold text-uppercase">Days Wellness Streak</div>
+              <div class="small text-muted mt-1" style="font-size: 0.75rem;">
+                Keep going! Consistency brings lasting peace.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Daily Motivational Quote -->
+      <div class="sl-card mb-4 border-start border-4 border-primary">
+        <div class="d-flex align-items-start gap-3">
+          <div class="quote-icon-circle text-primary">
+            <i class="bi bi-quote fs-3"></i>
+          </div>
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <span class="text-primary small fw-bold text-uppercase">Quote of the Day</span>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small">
+                {{ stats.dailyQuote.category || 'Mindfulness' }}
+              </span>
+            </div>
+            <p class="fs-5 fst-italic mb-1" style="color: var(--sl-text);">
+              "{{ stats.dailyQuote.quoteText }}"
+            </p>
+            <div class="text-muted small fw-semibold text-end">— {{ stats.dailyQuote.author }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Key Metrics & Quick Mood Check-in -->
+      <div class="row g-4 mb-4">
+        <!-- Quick Mood Check -->
+        <div class="col-lg-4 col-md-6">
+          <div class="sl-card h-100 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0 fs-6">Today's Mood</h5>
+              <a routerLink="/mood" class="small text-decoration-none">History &rarr;</a>
+            </div>
+
+            <div class="mb-3 text-center" *ngIf="stats.todayMood !== 'NOT_LOGGED'">
+              <div class="fs-1 mb-1">
+                <span *ngIf="stats.todayMood === 'HAPPY'">😊</span>
+                <span *ngIf="stats.todayMood === 'CALM'">😌</span>
+                <span *ngIf="stats.todayMood === 'NEUTRAL'">😐</span>
+                <span *ngIf="stats.todayMood === 'ANXIOUS'">😰</span>
+                <span *ngIf="stats.todayMood === 'SAD'">😔</span>
+              </div>
+              <span class="badge py-1 px-3 rounded-pill" [ngClass]="'badge-mood-' + stats.todayMood.toLowerCase()">
+                {{ stats.todayMood }}
+              </span>
+              <div class="text-muted small mt-1" *ngIf="stats.todayEnergy">
+                Energy Level: <strong>{{ stats.todayEnergy }}/5</strong>
+              </div>
+            </div>
+
+            <div class="mb-2 text-center text-muted small" *ngIf="stats.todayMood === 'NOT_LOGGED'">
+              How are you feeling right now?
+            </div>
+
+            <!-- Quick Mood Buttons -->
+            <div class="d-flex justify-content-around mt-auto pt-2">
+              <button class="btn btn-sm btn-outline-light text-dark mood-btn" (click)="quickLogMood('HAPPY')" title="Happy">
+                <span class="fs-4">😊</span><br><small style="font-size: 0.7rem;">Happy</small>
+              </button>
+              <button class="btn btn-sm btn-outline-light text-dark mood-btn" (click)="quickLogMood('CALM')" title="Calm">
+                <span class="fs-4">😌</span><br><small style="font-size: 0.7rem;">Calm</small>
+              </button>
+              <button class="btn btn-sm btn-outline-light text-dark mood-btn" (click)="quickLogMood('NEUTRAL')" title="Neutral">
+                <span class="fs-4">😐</span><br><small style="font-size: 0.7rem;">Neutral</small>
+              </button>
+              <button class="btn btn-sm btn-outline-light text-dark mood-btn" (click)="quickLogMood('ANXIOUS')" title="Anxious">
+                <span class="fs-4">😰</span><br><small style="font-size: 0.7rem;">Anxious</small>
+              </button>
+              <button class="btn btn-sm btn-outline-light text-dark mood-btn" (click)="quickLogMood('SAD')" title="Sad">
+                <span class="fs-4">😔</span><br><small style="font-size: 0.7rem;">Sad</small>
+              </button>
+            </div>
+
+            <div *ngIf="moodLoggedSuccess" class="alert alert-success py-1 px-2 small mt-2 mb-0 text-center border-0">
+              <i class="bi bi-check-circle-fill me-1"></i> Mood recorded!
+            </div>
+          </div>
+        </div>
+
+        <!-- Stress Score Status -->
+        <div class="col-lg-4 col-md-6">
+          <div class="sl-card h-100 d-flex flex-column">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0 fs-6">Stress Assessment</h5>
+              <a routerLink="/assessment" class="small text-decoration-none">Retake &rarr;</a>
+            </div>
+
+            <div class="my-auto text-center" *ngIf="stats.latestStressScore !== null">
+              <div class="display-5 fw-extrabold mb-1"
+                   [ngClass]="stats.latestStressLevel === 'LOW' ? 'text-success' : stats.latestStressLevel === 'MODERATE' ? 'text-warning' : 'text-danger'">
+                {{ stats.latestStressScore }}<span class="fs-6 text-muted">/100</span>
+              </div>
+              <span class="badge py-1 px-3 rounded-pill text-uppercase mb-2"
+                    [ngClass]="stats.latestStressLevel === 'LOW' ? 'badge-stress-low' : stats.latestStressLevel === 'MODERATE' ? 'badge-stress-mod' : 'badge-stress-high'">
+                {{ stats.latestStressLevel }} Stress
+              </span>
+              <p class="text-muted small mb-0">Self-reflection assessment report</p>
+            </div>
+
+            <div class="my-auto text-center py-3" *ngIf="stats.latestStressScore === null">
+              <i class="bi bi-clipboard2-pulse fs-1 text-muted mb-2"></i>
+              <p class="text-muted small mb-2">No stress assessment taken yet.</p>
+              <a routerLink="/assessment" class="btn btn-sm btn-sl-primary">Take 2-Min Assessment</a>
+            </div>
+
+            <div class="mt-auto pt-2 text-center text-muted" style="font-size: 0.75rem;">
+              Total Assessments: <strong>{{ stats.assessmentCount }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Practice Totals -->
+        <div class="col-lg-4 col-md-12">
+          <div class="sl-card h-100">
+            <h5 class="fw-bold mb-3 fs-6">Total Mindfulness Practice</h5>
+            <div class="row g-2 text-center mb-3">
+              <div class="col-6">
+                <div class="p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+                  <div class="fs-4 fw-bold text-primary">{{ stats.totalBreathingMinutes }}</div>
+                  <div class="text-muted small" style="font-size: 0.75rem;">Breathing Mins</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+                  <div class="fs-4 fw-bold text-success">{{ stats.totalMeditationMinutes }}</div>
+                  <div class="text-muted small" style="font-size: 0.75rem;">Meditation Mins</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center text-muted small border-top pt-2" style="border-color: var(--sl-border);">
+              <span>Personal Journal Entries:</span>
+              <strong class="text-primary">{{ stats.journalCount }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Quick Access Hub -->
+      <div class="mb-4">
+        <h4 class="h5 fw-bold mb-3">Quick Wellness Hub</h4>
+        <div class="row g-3">
+          <div class="col-md-3 col-6">
+            <a routerLink="/breathing" class="text-decoration-none">
+              <div class="sl-card sl-card-hover p-3 text-center h-100">
+                <div class="quick-icon bg-primary-subtle text-primary mb-2 mx-auto">
+                  <i class="bi bi-wind fs-4"></i>
+                </div>
+                <div class="fw-bold small text-dark">Breathing Exercises</div>
+                <div class="text-muted" style="font-size: 0.75rem;">Box & Slow Paced</div>
+              </div>
+            </a>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <a routerLink="/meditation" class="text-decoration-none">
+              <div class="sl-card sl-card-hover p-3 text-center h-100">
+                <div class="quick-icon bg-success-subtle text-success mb-2 mx-auto">
+                  <i class="bi bi-flower1 fs-4"></i>
+                </div>
+                <div class="fw-bold small text-dark">Guided Meditation</div>
+                <div class="text-muted" style="font-size: 0.75rem;">Clarity & Sleep</div>
+              </div>
+            </a>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <a routerLink="/music" class="text-decoration-none">
+              <div class="sl-card sl-card-hover p-3 text-center h-100">
+                <div class="quick-icon bg-purple-subtle text-purple mb-2 mx-auto" style="background-color: var(--sl-lavender-subtle); color: var(--sl-lavender);">
+                  <i class="bi bi-music-note-beamed fs-4"></i>
+                </div>
+                <div class="fw-bold small text-dark">Relaxing Sounds</div>
+                <div class="text-muted" style="font-size: 0.75rem;">Rain & Ocean Waves</div>
+              </div>
+            </a>
+          </div>
+
+          <div class="col-md-3 col-6">
+            <a routerLink="/journal" class="text-decoration-none">
+              <div class="sl-card sl-card-hover p-3 text-center h-100">
+                <div class="quick-icon bg-warning-subtle text-warning mb-2 mx-auto">
+                  <i class="bi bi-journal-text fs-4"></i>
+                </div>
+                <div class="fw-bold small text-dark">Personal Journal</div>
+                <div class="text-muted" style="font-size: 0.75rem;">Reflect & Unload</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Recent Activity and Goals Row -->
+      <div class="row g-4">
+        <!-- Recent Activities -->
+        <div class="col-lg-7">
+          <div class="sl-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0 fs-6">Recent Wellness Activities</h5>
+              <a routerLink="/progress" class="small text-decoration-none">View All &rarr;</a>
+            </div>
+
+            <div *ngIf="stats.recentActivities.length === 0" class="text-center py-4 text-muted small">
+              No recent activities recorded yet. Complete a breathing session or write a journal entry to get started!
+            </div>
+
+            <div class="list-group list-group-flush" *ngIf="stats.recentActivities.length > 0">
+              <div class="list-group-item bg-transparent px-0 py-2 border-bottom d-flex align-items-center gap-3"
+                   *ngFor="let act of stats.recentActivities" style="border-color: var(--sl-border) !important;">
+                <div class="activity-icon-badge" [ngClass]="act.type === 'BREATHING' ? 'bg-primary-subtle text-primary' : act.type === 'MEDITATION' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'">
+                  <i class="bi" [ngClass]="act.icon"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold small text-truncate" style="max-width: 250px;">{{ act.title }}</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">{{ act.detail }}</div>
+                </div>
+                <div class="text-muted small" style="font-size: 0.75rem;">{{ act.timestamp }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Goals -->
+        <div class="col-lg-5">
+          <div class="sl-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0 fs-6">Personal Goals</h5>
+              <a routerLink="/progress" class="small text-decoration-none">Manage &rarr;</a>
+            </div>
+
+            <div *ngIf="stats.activeGoals.length === 0" class="text-center py-4 text-muted small">
+              <p class="mb-2">No active goals set.</p>
+              <a routerLink="/progress" class="btn btn-sm btn-sl-outline">Set a Wellness Goal</a>
+            </div>
+
+            <div *ngIf="stats.activeGoals.length > 0">
+              <div class="mb-3" *ngFor="let goal of stats.activeGoals">
+                <div class="d-flex justify-content-between small mb-1">
+                  <span class="fw-semibold text-truncate" style="max-width: 180px;">{{ goal.title }}</span>
+                  <span class="text-muted">{{ goal.current }} / {{ goal.target }}</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                  <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="goal.percentage"
+                       [attr.aria-valuenow]="goal.percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

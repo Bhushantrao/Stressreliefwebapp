@@ -1,0 +1,63 @@
+.max-w-700 {
+  max-width: 700px;
+}
+
+.hero-section {
+  border-bottom: 1px solid var(--sl-border);
+}
+
+.hero-visual-card {
+  max-width: 440px;
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  border-radius: var(--sl-radius-xl);
+  box-shadow: var(--sl-shadow-lg);
+}
+
+.hero-orb-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 220px;
+}
+
+.hero-orb {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #60a5fa, #3b82f6 50%, #8b5cf6 90%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.4);
+}
+
+.hero-quote-card {
+  background: var(--sl-bg-alt);
+  border: 1px solid var(--sl-border);
+}
+
+.feature-icon-badge {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--sl-primary), var(--sl-lavender));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+}

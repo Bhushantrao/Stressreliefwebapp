@@ -1,0 +1,16 @@
+.register-wrapper {
+  background-color: var(--sl-bg);
+}
+
+.register-logo-circle {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--sl-sage), var(--sl-primary));
+  color: white;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}

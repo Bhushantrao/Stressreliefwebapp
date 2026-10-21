@@ -1,0 +1,125 @@
+<div class="meditation-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <div class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small mb-2">
+          <i class="bi bi-flower1 me-1"></i> Mindfulness & Calm Practice
+        </div>
+        <h1 class="h2 fw-extrabold mb-1">Guided Meditation Sessions</h1>
+        <p class="text-muted small mb-0">Immerse your mind in guided awareness, sensory anchors, and progressive body relaxation.</p>
+      </div>
+    </div>
+
+    <!-- Completion Notice Alert -->
+    <div *ngIf="completionNotice" class="alert alert-success alert-dismissible fade show text-center py-2 px-3 small border-0 mb-4">
+      <i class="bi bi-check-circle-fill me-1"></i> Session completed! Recorded in your wellness journey history.
+    </div>
+
+    <!-- Category Filter Chips -->
+    <div class="d-flex gap-2 flex-wrap mb-4">
+      <button *ngFor="let cat of categories" type="button"
+              class="btn btn-sm rounded-pill px-3"
+              [ngClass]="selectedCategory === cat ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="filterCategory(cat)">
+        {{ cat }}
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="text-muted small mt-2">Loading meditation sessions...</p>
+    </div>
+
+    <!-- Sessions Grid -->
+    <div class="row g-4 mb-5" *ngIf="!isLoading">
+      <div class="col-lg-4 col-md-6" *ngFor="let s of filteredSessions">
+        <div class="sl-card sl-card-hover h-100 p-0 overflow-hidden d-flex flex-column">
+          <!-- Session Image with category & duration badges -->
+          <div class="session-img-wrapper position-relative">
+            <img [src]="s.imageUrl || 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=600&q=80'"
+                 [alt]="s.title" class="w-100 session-img">
+            <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+              <span class="badge bg-dark bg-opacity-75 text-white rounded-pill px-3 py-1 small">
+                {{ s.category }}
+              </span>
+              <span class="badge bg-primary rounded-pill px-2 py-1 small" *ngIf="s.difficulty">
+                {{ s.difficulty }}
+              </span>
+            </div>
+
+            <!-- Play button overlay -->
+            <button class="btn btn-play-overlay" (click)="playSession(s)">
+              <i class="bi" [ngClass]="currentSession?.id === s.id && isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+            </button>
+          </div>
+
+          <!-- Session Details -->
+          <div class="p-4 d-flex flex-column flex-grow-1">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h4 class="h5 fw-bold mb-0 text-truncate" style="max-width: 220px;">{{ s.title }}</h4>
+              <span class="badge bg-light text-dark border rounded-pill">
+                <i class="bi bi-clock me-1"></i> {{ s.durationMinutes }} min
+              </span>
+            </div>
+
+            <p class="text-muted small mb-3 flex-grow-1">{{ s.description }}</p>
+
+            <div class="instructions-box p-2 rounded-2 mb-3 small text-muted fst-italic" *ngIf="s.instructions">
+              <i class="bi bi-info-circle me-1 text-primary"></i> {{ s.instructions }}
+            </div>
+
+            <div class="mt-auto d-flex gap-2">
+              <button class="btn btn-sm btn-sl-sage flex-fill py-2" (click)="playSession(s)">
+                <i class="bi" [ngClass]="currentSession?.id === s.id && isPlaying ? 'bi-pause-circle-fill' : 'bi-play-circle-fill'"></i>
+                {{ currentSession?.id === s.id && isPlaying ? 'Pause Audio' : 'Play Session' }}
+              </button>
+              <button class="btn btn-sm btn-sl-outline py-2 px-3" (click)="markCompleted(s)" title="Mark as Completed">
+                <i class="bi bi-check2"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Floating Audio Player Bar when Session Playing -->
+    <div class="fixed-bottom p-3" *ngIf="currentSession">
+      <div class="container max-w-700">
+        <div class="floating-player p-3 rounded-4 shadow-lg border d-flex align-items-center gap-3">
+          <img [src]="currentSession.imageUrl || 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=150&q=80'"
+               class="rounded-3 player-thumb" alt="Playing thumb">
+
+          <div class="flex-grow-1 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="fw-bold small text-truncate" style="max-width: 200px;">{{ currentSession.title }}</span>
+              <span class="badge bg-primary rounded-pill small">{{ currentSession.durationMinutes }} min</span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress" style="height: 5px;">
+              <div class="progress-bar bg-success" role="progressbar" [style.width.%]="progressPercent"></div>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-light rounded-circle shadow-sm" *ngIf="isPlaying" (click)="pauseSession()">
+              <i class="bi bi-pause-fill fs-5 text-primary"></i>
+            </button>
+            <button class="btn btn-sm btn-primary rounded-circle shadow-sm" *ngIf="!isPlaying" (click)="resumeSession()">
+              <i class="bi bi-play-fill fs-5"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 small" (click)="markCompleted(currentSession)">
+              <i class="bi bi-check-circle me-1"></i> Done
+            </button>
+            <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="stopSession()" title="Close player">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+.welcome-banner {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.06), rgba(16, 185, 129, 0.04));
+  border: 1px solid var(--sl-border);
+}
+
+.streak-card {
+  max-width: 220px;
+  background: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  box-shadow: var(--sl-shadow-sm);
+}
+
+.streak-flame {
+  font-size: 2.2rem;
+  animation: floatGentle 3s infinite ease-in-out;
+}
+
+.quote-icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: var(--sl-primary-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mood-btn {
+  background: var(--sl-bg-alt);
+  border: 1px solid var(--sl-border);
+  border-radius: 12px;
+  padding: 6px 10px;
+  color: var(--sl-text) !important;
+  transition: all 0.2s ease;
+}
+
+.mood-btn:hover {
+  background: var(--sl-primary-subtle);
+  border-color: var(--sl-primary);
+  transform: translateY(-2px);
+}
+
+.quick-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}

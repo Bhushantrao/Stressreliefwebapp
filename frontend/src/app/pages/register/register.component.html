@@ -1,0 +1,107 @@
+<div class="register-wrapper py-5 d-flex align-items-center min-vh-100">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-9 col-lg-6">
+        <div class="sl-card shadow-lg p-4 p-sm-5">
+          <!-- Logo & Header -->
+          <div class="text-center mb-4">
+            <div class="register-logo-circle mb-3 mx-auto">
+              <i class="bi bi-sparkles"></i>
+            </div>
+            <h2 class="h3 fw-bold mb-1">Create Your Account</h2>
+            <p class="text-muted small">Start practicing daily stress management and mindfulness</p>
+          </div>
+
+          <!-- Success Alert -->
+          <div *ngIf="successMessage" class="alert alert-success py-2 px-3 small border-0 d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ successMessage }}</span>
+          </div>
+
+          <!-- Error Alert -->
+          <div *ngIf="errorMessage" class="alert alert-danger py-2 px-3 small border-0 d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- Registration Form -->
+          <form (ngSubmit)="onSubmit()" #regForm="ngForm">
+            <div class="mb-3">
+              <label for="name" class="form-label small fw-semibold">Full Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--sl-border);">
+                  <i class="bi bi-person"></i>
+                </span>
+                <input type="text" id="name" name="name" class="form-control sl-input border-start-0"
+                       [(ngModel)]="name" required placeholder="e.g. Maya Patel">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="regEmail" class="form-label small fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--sl-border);">
+                  <i class="bi bi-envelope"></i>
+                </span>
+                <input type="email" id="regEmail" name="email" class="form-control sl-input border-start-0"
+                       [(ngModel)]="email" required placeholder="name@university.edu or name@work.com">
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-sm-6">
+                <label for="regPassword" class="form-label small fw-semibold">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--sl-border);">
+                    <i class="bi bi-lock"></i>
+                  </span>
+                  <input type="password" id="regPassword" name="password" class="form-control sl-input border-start-0"
+                         [(ngModel)]="password" required placeholder="At least 6 chars">
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <label for="confirmPassword" class="form-label small fw-semibold">Confirm Password</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--sl-border);">
+                    <i class="bi bi-shield-check"></i>
+                  </span>
+                  <input type="password" id="confirmPassword" name="confirmPassword" class="form-control sl-input border-start-0"
+                         [(ngModel)]="confirmPassword" required placeholder="Repeat password">
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label small fw-semibold">Account Role</label>
+              <div class="d-flex gap-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="role" id="roleUser" value="ROLE_USER" [(ngModel)]="role">
+                  <label class="form-check-label small" for="roleUser">
+                    Student / Professional
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="role" id="roleAdmin" value="ROLE_ADMIN" [(ngModel)]="role">
+                  <label class="form-check-label small" for="roleAdmin">
+                    Platform Administrator
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-sl-primary w-100 py-2 mb-3" [disabled]="isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ isLoading ? 'Creating Account...' : 'Complete Registration' }}
+            </button>
+          </form>
+
+          <div class="text-center small text-muted">
+            Already have an account?
+            <a routerLink="/login" class="text-primary fw-bold text-decoration-none ms-1">Sign In</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

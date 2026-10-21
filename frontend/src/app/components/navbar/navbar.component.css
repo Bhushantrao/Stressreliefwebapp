@@ -1,0 +1,111 @@
+.sl-navbar {
+  background-color: var(--sl-bg-card);
+  border-bottom: 1px solid var(--sl-border);
+  backdrop-filter: blur(12px);
+  padding: 0.8rem 1rem;
+  transition: all 0.25s ease;
+  z-index: 1030;
+}
+
+.sl-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--sl-primary), var(--sl-lavender));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+}
+
+.sl-brand-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.1;
+  color: var(--sl-text);
+  letter-spacing: -0.02em;
+}
+
+.sl-brand-tagline {
+  font-size: 0.7rem;
+  color: var(--sl-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+.nav-link {
+  color: var(--sl-text-muted);
+  font-weight: 500;
+  font-size: 0.92rem;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--sl-primary) !important;
+  background-color: var(--sl-primary-subtle);
+}
+
+.btn-theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sl-bg-alt);
+  border: 1px solid var(--sl-border);
+  color: var(--sl-text);
+  transition: all 0.2s ease;
+}
+
+.btn-theme-toggle:hover {
+  background: var(--sl-border);
+  transform: rotate(15deg);
+}
+
+.user-pill {
+  padding: 4px 12px 4px 6px;
+  background: var(--sl-bg-alt);
+  border: 1px solid var(--sl-border);
+  border-radius: 9999px;
+  color: var(--sl-text);
+  transition: all 0.2s ease;
+}
+
+.user-pill:hover {
+  border-color: var(--sl-primary-border);
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.sl-dropdown {
+  background-color: var(--sl-bg-card);
+  border: 1px solid var(--sl-border);
+  border-radius: 16px;
+  padding: 8px 0;
+}
+
+.sl-dropdown .dropdown-item {
+  color: var(--sl-text);
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease;
+}
+
+.sl-dropdown .dropdown-item:hover {
+  background-color: var(--sl-primary-subtle);
+}

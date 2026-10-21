@@ -1,0 +1,19 @@
+.question-block {
+  border: 1px solid var(--sl-border);
+  transition: border-color 0.2s ease;
+}
+
+.question-block:hover {
+  border-color: var(--sl-primary-border);
+}
+
+.border-end-lg {
+  border-right: 1px solid var(--sl-border);
+}
+
+@media (max-width: 991.98px) {
+  .border-end-lg {
+    border-right: none;
+    border-bottom: 1px solid var(--sl-border);
+  }
+}

@@ -1,0 +1,1050 @@
+{
+  "info": {
+    "_postman_id": "c1f76d49-43c2-482a-9cb8-stressless01",
+    "name": "StressLess Platform REST APIs",
+    "description": "Complete Postman collection for StressLess – Stress Relief and Mental Wellness Platform. Backend runs on Spring Boot (port 8081) with MySQL and Spring Security JWT.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register Regular User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Jenkins\",\n  \"email\": \"sarah@example.com\",\n  \"password\": \"Password@123\",\n  \"roles\": [\"ROLE_USER\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registers a new user account with BCrypt password hashing."
+          }
+        },
+        {
+          "name": "Login - Regular User (Alex)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    console.log(\"User Token saved:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alex@example.com\",\n  \"password\": \"User@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Logs in the seeded test user and stores JWT token in the 'token' variable."
+          }
+        },
+        {
+          "name": "Login - Administrator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set(\"adminToken\", jsonData.token);",
+                  "    console.log(\"Admin Token saved:\", jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@stressless.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Logs in the platform admin and stores JWT token in the 'adminToken' variable."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Dashboard & Motivational Quotes",
+      "item": [
+        {
+          "name": "Get Daily Motivational Quote (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quotes/daily",
+              "host": ["{{baseUrl}}"],
+              "path": ["quotes", "daily"]
+            },
+            "description": "Returns the active daily inspirational quote."
+          }
+        },
+        {
+          "name": "Get All Quotes (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/quotes",
+              "host": ["{{baseUrl}}"],
+              "path": ["quotes"]
+            }
+          }
+        },
+        {
+          "name": "Get Personalized Dashboard Summary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "stats"]
+            },
+            "description": "Returns personalized statistics: streak, today's mood, assessment score, weekly activity counts, goals, and recent activity feed."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Stress Assessment",
+      "item": [
+        {
+          "name": "Submit Stress Assessment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"q1Overwhelmed\": 3,\n  \"q2Control\": 2,\n  \"q3Nervous\": 3,\n  \"q4Confidence\": 2,\n  \"q5ThingsGoingWay\": 3,\n  \"q6Coping\": 2,\n  \"q7Irritable\": 3,\n  \"q8OnTopOfThings\": 2,\n  \"q9Angered\": 2,\n  \"q10DifficultiesPiling\": 3,\n  \"sleepQualityHours\": 6.5,\n  \"workloadRating\": 7,\n  \"moodScore\": 6,\n  \"physicalSymptoms\": \"Tension headaches, shoulder stiffness\",\n  \"notes\": \"Midterm exams and project deadlines approaching this week.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assessments",
+              "host": ["{{baseUrl}}"],
+              "path": ["assessments"]
+            },
+            "description": "Calculates wellness score (0-100), categorizes stress level (LOW, MODERATE, HIGH), generates tailored wellness recommendations, and attaches an educational self-reflection disclaimer."
+          }
+        },
+        {
+          "name": "Get Latest Assessment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assessments/latest",
+              "host": ["{{baseUrl}}"],
+              "path": ["assessments", "latest"]
+            }
+          }
+        },
+        {
+          "name": "Get Assessment History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assessments/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["assessments", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Guided Breathing",
+      "item": [
+        {
+          "name": "Log Breathing Session",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technique\": \"Box Breathing (4-4-4-4)\",\n  \"durationSeconds\": 300,\n  \"cyclesCompleted\": 18,\n  \"feelingBefore\": \"Tense and overwhelmed with work\",\n  \"feelingAfter\": \"Calm, centered, and breathing slowed\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/breathing/sessions",
+              "host": ["{{baseUrl}}"],
+              "path": ["breathing", "sessions"]
+            },
+            "description": "Records completed breathing exercise session and updates streak."
+          }
+        },
+        {
+          "name": "Get Breathing Session History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/breathing/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["breathing", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Guided Meditation",
+      "item": [
+        {
+          "name": "List Guided Meditations (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meditations?category=STRESS_RELIEF",
+              "host": ["{{baseUrl}}"],
+              "path": ["meditations"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "STRESS_RELIEF"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Meditation Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meditations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["meditations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Complete Meditation Session",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"durationMinutes\": 10,\n  \"notes\": \"Mind felt much clearer afterwards.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/meditations/1/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["meditations", "1", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Get User Meditation History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/meditations/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["meditations", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Relaxing Music & Soundscapes",
+      "item": [
+        {
+          "name": "List Relaxing Audio Resources (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/music/resources",
+              "host": ["{{baseUrl}}"],
+              "path": ["music", "resources"]
+            },
+            "description": "Returns ambient nature soundscapes, rain, ocean waves, binaural beats, and relaxing piano tracks."
+          }
+        },
+        {
+          "name": "Get Soundscape Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/music/resources/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["music", "resources", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Mood Tracker",
+      "item": [
+        {
+          "name": "Log Daily Mood",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mood\": \"CALM\",\n  \"energyLevel\": 4,\n  \"notes\": \"Took an afternoon walk in the park. Feeling balanced.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mood",
+              "host": ["{{baseUrl}}"],
+              "path": ["mood"]
+            },
+            "description": "Mood options: HAPPY, CALM, NEUTRAL, ANXIOUS, SAD. Energy level is 1 to 5."
+          }
+        },
+        {
+          "name": "Get Today's Mood",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/mood/today",
+              "host": ["{{baseUrl}}"],
+              "path": ["mood", "today"]
+            }
+          }
+        },
+        {
+          "name": "Get Mood History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/mood/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["mood", "history"]
+            }
+          }
+        },
+        {
+          "name": "Get Mood Trends & Insights",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/mood/trends",
+              "host": ["{{baseUrl}}"],
+              "path": ["mood", "trends"]
+            },
+            "description": "Returns counts and percentages for each mood, average energy, top mood, and personalized psychological insight."
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Personal Journal (Private & Isolated)",
+      "item": [
+        {
+          "name": "Create Journal Entry",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Finding Peace in the Rush\",\n  \"content\": \"Today was packed with client meetings, but taking 5 minutes between calls to do Box Breathing helped immensely. I remembered that urgency is often self-imposed.\",\n  \"moodTag\": \"Reflective\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/journal",
+              "host": ["{{baseUrl}}"],
+              "path": ["journal"]
+            }
+          }
+        },
+        {
+          "name": "List User's Journal Entries",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/journal?search=peace",
+              "host": ["{{baseUrl}}"],
+              "path": ["journal"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "peace"
+                }
+              ]
+            },
+            "description": "Retrieves only the authenticated user's own journal entries. Strictly isolated."
+          }
+        },
+        {
+          "name": "Get Journal Entry By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/journal/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["journal", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Journal Entry",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Finding Peace in the Rush (Updated)\",\n  \"content\": \"Updated reflection: Evening was peaceful with ambient rain sounds.\",\n  \"moodTag\": \"Peaceful\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/journal/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["journal", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Journal Entry",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/journal/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["journal", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Wellness Progress & Goals",
+      "item": [
+        {
+          "name": "Get Comprehensive Progress Report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/progress/report",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "report"]
+            },
+            "description": "Calculates streak days, breathing total minutes, meditation total minutes, journal count, and 7-day activity timeline."
+          }
+        },
+        {
+          "name": "List User Wellness Goals",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/progress/goals",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "goals"]
+            }
+          }
+        },
+        {
+          "name": "Create Wellness Goal",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Daily Box Breathing\",\n  \"description\": \"Complete at least 5 minutes of mindful breathing every afternoon.\",\n  \"category\": \"BREATHING\",\n  \"targetValue\": 30,\n  \"targetUnit\": \"Days\",\n  \"deadline\": \"2026-11-30\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/progress/goals",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "goals"]
+            }
+          }
+        },
+        {
+          "name": "Update Goal Progress",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentValue\": 10,\n  \"completed\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/progress/goals/1/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "goals", "1", "progress"]
+            }
+          }
+        },
+        {
+          "name": "Delete Wellness Goal",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/progress/goals/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "goals", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. User Profile",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alex Mercer\",\n  \"bio\": \"Software developer aiming for mindfulness and lower work stress.\",\n  \"avatarUrl\": \"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"User@123\",\n  \"newPassword\": \"NewSecurePass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/profile/password",
+              "host": ["{{baseUrl}}"],
+              "path": ["profile", "password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. Admin Management (Role: ROLE_ADMIN)",
+      "item": [
+        {
+          "name": "Get Admin Platform Statistics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "stats"]
+            },
+            "description": "Returns counts of users, assessments, meditations, breathing exercises, and aggregate platform activity. Strictly restricted to ROLE_ADMIN."
+          }
+        },
+        {
+          "name": "Get User Directory (Without Journal/Mood details)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"]
+            },
+            "description": "Lists registered accounts and roles while preserving privacy."
+          }
+        },
+        {
+          "name": "Create Motivational Quote",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quote\": \"You don't have to control your thoughts. You just have to stop letting them control you.\",\n  \"author\": \"Dan Millman\",\n  \"category\": \"Mindfulness\",\n  \"dailyQuote\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/quotes",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "quotes"]
+            }
+          }
+        },
+        {
+          "name": "Create Meditation Session",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Deep Unwind Sleep Meditation\",\n  \"description\": \"Gentle breathing and body scan meditation to prepare your nervous system for restful sleep.\",\n  \"durationMinutes\": 15,\n  \"category\": \"SLEEP\",\n  \"audioUrl\": \"https://cdn.freesound.org/previews/518/518342_7037-lq.mp3\",\n  \"instructor\": \"Elena Vance\",\n  \"imageUrl\": \"https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?w=500\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/meditations",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "meditations"]
+            }
+          }
+        },
+        {
+          "name": "Create Relaxation Soundscape",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Gentle Waterfall & Birds\",\n  \"description\": \"Crisp mountain stream soundscape with distant songbirds.\",\n  \"type\": \"NATURE\",\n  \"audioUrl\": \"https://cdn.freesound.org/previews/273/273629_4939433-lq.mp3\",\n  \"iconName\": \"bi-water\",\n  \"durationSeconds\": 1200\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/music",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "music"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

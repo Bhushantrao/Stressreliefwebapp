@@ -1,0 +1,104 @@
+<div class="profile-page py-4">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <!-- Header -->
+        <div class="mb-4">
+          <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill small mb-2">
+            <i class="bi bi-person-circle me-1"></i> Account & Preferences
+          </div>
+          <h1 class="h2 fw-extrabold mb-1">Your Wellness Profile</h1>
+          <p class="text-muted small mb-0">Manage your personal credentials, public identity, and security settings.</p>
+        </div>
+
+        <!-- Success / Error Alerts -->
+        <div *ngIf="successMessage" class="alert alert-success py-2 px-3 small border-0 mb-4">
+          <i class="bi bi-check-circle-fill me-1"></i> {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger py-2 px-3 small border-0 mb-4">
+          <i class="bi bi-exclamation-circle-fill me-1"></i> {{ errorMessage }}
+        </div>
+
+        <!-- Profile Card -->
+        <div class="sl-card shadow-sm p-4 p-md-5 mb-4" *ngIf="user">
+          <div class="d-flex flex-column flex-sm-row align-items-center gap-4 mb-4 border-bottom pb-4" style="border-color: var(--sl-border);">
+            <img [src]="avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80'"
+                 alt="Profile avatar" class="rounded-circle profile-large-avatar border shadow-sm">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <h3 class="h4 fw-bold mb-0">{{ user.name }}</h3>
+                <span class="badge rounded-pill small"
+                      [ngClass]="user.role === 'ROLE_ADMIN' ? 'bg-primary' : 'bg-secondary'">
+                  {{ user.role === 'ROLE_ADMIN' ? 'Administrator' : 'Member' }}
+                </span>
+              </div>
+              <div class="text-muted small mb-2">{{ user.email }}</div>
+              <div class="small text-muted" style="font-size: 0.75rem;">
+                <i class="bi bi-calendar-event me-1"></i> Member since {{ user.createdAt | date:'mediumDate' }}
+              </div>
+            </div>
+          </div>
+
+          <form (ngSubmit)="onSubmit()">
+            <!-- Avatar Picker -->
+            <div class="mb-4">
+              <label class="form-label small fw-semibold">Choose Your Avatar</label>
+              <div class="d-flex gap-3 flex-wrap">
+                <img *ngFor="let opt of avatarOptions" [src]="opt" alt="Option"
+                     class="rounded-circle avatar-option cursor-pointer"
+                     [ngClass]="{ 'active-avatar shadow': avatarUrl === opt }"
+                     (click)="selectAvatar(opt)">
+              </div>
+            </div>
+
+            <!-- Name Field -->
+            <div class="mb-3">
+              <label for="profName" class="form-label small fw-semibold">Display Name</label>
+              <input type="text" id="profName" class="form-control sl-input"
+                     [(ngModel)]="name" name="name" required>
+            </div>
+
+            <!-- Email (Read only) -->
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Email Address (Locked)</label>
+              <input type="email" class="form-control sl-input bg-alt" [value]="user.email" disabled>
+            </div>
+
+            <!-- Bio -->
+            <div class="mb-4">
+              <label for="profBio" class="form-label small fw-semibold">Personal Wellness Intention / Bio</label>
+              <textarea id="profBio" class="form-control sl-input" rows="2"
+                        [(ngModel)]="bio" name="bio" placeholder="e.g. Taking 5 minutes every day for mental clarity and peace"></textarea>
+            </div>
+
+            <!-- Password Change Section -->
+            <div class="p-3 rounded-3 mb-4" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+              <h5 class="fw-bold fs-6 mb-2"><i class="bi bi-shield-lock me-1"></i> Change Password (Optional)</h5>
+              <p class="text-muted small mb-3" style="font-size: 0.8rem;">Leave blank if you do not wish to change your password.</p>
+
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="profOldPass" class="form-label small fw-semibold">Current Password</label>
+                  <input type="password" id="profOldPass" class="form-control sl-input"
+                         [(ngModel)]="oldPassword" name="oldPassword" placeholder="Current password">
+                </div>
+                <div class="col-sm-6">
+                  <label for="profNewPass" class="form-label small fw-semibold">New Password</label>
+                  <input type="password" id="profNewPass" class="form-control sl-input"
+                         [(ngModel)]="newPassword" name="newPassword" placeholder="New password (min 6 chars)">
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-sl-primary px-4 py-2" [disabled]="isSaving">
+                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Save Profile Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

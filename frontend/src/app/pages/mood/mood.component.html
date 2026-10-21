@@ -1,0 +1,205 @@
+<div class="mood-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <div class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill small mb-2">
+          <i class="bi bi-emoji-smile me-1"></i> Daily Emotional Headspace
+        </div>
+        <h1 class="h2 fw-extrabold mb-1">Daily Mood Tracker & Trends</h1>
+        <p class="text-muted small mb-0">Record how you feel each day, observe weekly shifts, and identify emotional patterns.</p>
+      </div>
+
+      <!-- Period selector -->
+      <div class="btn-group mt-3 mt-md-0">
+        <button type="button" class="btn btn-sm" [ngClass]="selectedDays === 7 ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="changePeriod(7)">
+          Last 7 Days
+        </button>
+        <button type="button" class="btn btn-sm" [ngClass]="selectedDays === 30 ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="changePeriod(30)">
+          Last 30 Days
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Alert -->
+    <div *ngIf="successNotice" class="alert alert-success alert-dismissible fade show text-center py-2 px-3 small border-0 mb-4">
+      <i class="bi bi-check-circle-fill me-1"></i> {{ successNotice }}
+    </div>
+
+    <div class="row g-4 mb-5">
+      <!-- 1. Log Mood Form -->
+      <div class="col-lg-5">
+        <div class="sl-card h-100 p-4">
+          <h4 class="h5 fw-bold mb-3">Record Today's Check-in</h4>
+
+          <form (ngSubmit)="submitMood()">
+            <!-- Mood Buttons -->
+            <label class="form-label small fw-semibold mb-2">How are you feeling?</label>
+            <div class="d-flex justify-content-between gap-1 mb-4">
+              <button *ngFor="let opt of moodOptions" type="button"
+                      class="btn mood-select-btn flex-fill text-center p-2 rounded-3 border"
+                      [ngClass]="{ 'active-mood shadow-sm': selectedMood === opt.value }"
+                      (click)="selectMood(opt.value)">
+                <div class="fs-2 mb-1">{{ opt.emoji }}</div>
+                <div class="small fw-semibold">{{ opt.label }}</div>
+              </button>
+            </div>
+
+            <!-- Energy Level Slider -->
+            <div class="p-3 rounded-3 mb-4" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label small fw-semibold mb-0">Energy & Vitality</label>
+                <span class="badge bg-primary rounded-pill">{{ energyLevel }} / 5</span>
+              </div>
+              <input type="range" class="form-range" min="1" max="5" step="1" [(ngModel)]="energyLevel" name="energyLevel">
+              <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span>1 - Exhausted</span>
+                <span>3 - Moderate</span>
+                <span>5 - High Energy</span>
+              </div>
+            </div>
+
+            <!-- Reflection Notes -->
+            <div class="mb-3">
+              <label for="moodNotes" class="form-label small fw-semibold">Optional Notes / Context</label>
+              <textarea id="moodNotes" name="notes" class="form-control sl-input" rows="2"
+                        [(ngModel)]="notes" placeholder="What contributed to this state today?"></textarea>
+            </div>
+
+            <!-- Tags -->
+            <div class="mb-4">
+              <label for="moodTags" class="form-label small fw-semibold">Tags (comma separated)</label>
+              <input type="text" id="moodTags" name="tags" class="form-control sl-input"
+                     [(ngModel)]="tags" placeholder="e.g. work, exercise, good sleep, exams">
+            </div>
+
+            <button type="submit" class="btn btn-sl-primary w-100 py-2" [disabled]="isSubmitting">
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ isSubmitting ? 'Saving...' : 'Save Mood Check-in' }}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 2. Trends & Distribution Card -->
+      <div class="col-lg-7">
+        <div class="sl-card h-100 p-4 d-flex flex-column" *ngIf="trends">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="h5 fw-bold mb-0">Mood Distribution ({{ selectedDays }} Days)</h4>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small">
+              Avg Energy: {{ trends.averageEnergy }}/5
+            </span>
+          </div>
+
+          <!-- Predominant Insight Banner -->
+          <div class="p-3 rounded-3 mb-4 d-flex align-items-start gap-2"
+               style="background-color: var(--sl-primary-subtle); border: 1px solid var(--sl-primary-border);">
+            <i class="bi bi-lightbulb-fill text-primary fs-5 flex-shrink-0 mt-1"></i>
+            <div>
+              <div class="fw-bold small text-primary mb-1">Emotional Trend Insight</div>
+              <div class="small text-muted">{{ trends.insight }}</div>
+            </div>
+          </div>
+
+          <!-- Distribution Visual Bars -->
+          <div class="mb-4">
+            <div *ngFor="let opt of moodOptions" class="mb-2">
+              <div class="d-flex justify-content-between small mb-1">
+                <span class="fw-semibold">
+                  <span class="me-1">{{ opt.emoji }}</span> {{ opt.label }}
+                </span>
+                <span class="text-muted">
+                  {{ trends.moodDistribution[opt.value] || 0 }} logged ({{ ((trends.moodDistribution[opt.value] || 0) / getDistributionTotal() * 100) | number:'1.0-0' }}%)
+                </span>
+              </div>
+              <div class="progress" style="height: 10px;">
+                <div class="progress-bar" role="progressbar"
+                     [style.width.%]="((trends.moodDistribution[opt.value] || 0) / getDistributionTotal() * 100)"
+                     [style.background-color]="opt.value === 'HAPPY' ? '#eab308' : opt.value === 'CALM' ? '#10b981' : opt.value === 'NEUTRAL' ? '#64748b' : opt.value === 'ANXIOUS' ? '#f97316' : '#0284c7'">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Daily Timeline Chart (SVG mini graph) -->
+          <div class="mt-auto pt-3 border-top" style="border-color: var(--sl-border);">
+            <div class="fw-bold small mb-2 text-uppercase text-muted" style="font-size: 0.75rem;">Daily Check-in Timeline</div>
+            <div *ngIf="trends.dailyTimeline.length === 0" class="text-muted small text-center py-3">
+              No entries logged in this period.
+            </div>
+
+            <div class="d-flex gap-2 overflow-auto pb-2" *ngIf="trends.dailyTimeline.length > 0">
+              <div *ngFor="let day of trends.dailyTimeline" class="p-2 rounded-3 text-center timeline-chip flex-shrink-0"
+                   style="min-width: 72px; background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+                <div class="small text-muted" style="font-size: 0.7rem;">{{ day.date }}</div>
+                <div class="fs-4 my-1">
+                  <span *ngIf="day.mood === 'HAPPY'">😊</span>
+                  <span *ngIf="day.mood === 'CALM'">😌</span>
+                  <span *ngIf="day.mood === 'NEUTRAL'">😐</span>
+                  <span *ngIf="day.mood === 'ANXIOUS'">😰</span>
+                  <span *ngIf="day.mood === 'SAD'">😔</span>
+                </div>
+                <div class="badge bg-light text-dark border small" style="font-size: 0.65rem;">
+                  {{ day.energy }}/5
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mood History Table -->
+    <div class="sl-card">
+      <h4 class="h5 fw-bold mb-3">Mood Log History</h4>
+
+      <div *ngIf="history.length === 0" class="text-center py-4 text-muted small">
+        No mood logs recorded yet. Start tracking above!
+      </div>
+
+      <div class="table-responsive" *ngIf="history.length > 0">
+        <table class="table table-hover align-middle small mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Date & Time</th>
+              <th>Mood</th>
+              <th>Energy</th>
+              <th>Notes</th>
+              <th>Tags</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of history">
+              <td class="text-muted">{{ item.loggedAt | date:'medium' }}</td>
+              <td>
+                <span class="badge rounded-pill text-uppercase" [ngClass]="'badge-mood-' + item.mood.toLowerCase()">
+                  {{ item.mood }}
+                </span>
+              </td>
+              <td>
+                <span class="fw-semibold">{{ item.energyLevel }}/5</span>
+              </td>
+              <td class="text-muted text-truncate" style="max-width: 250px;">
+                {{ item.notes || '—' }}
+              </td>
+              <td>
+                <span class="badge bg-light text-muted border rounded-pill" *ngIf="item.tags">
+                  {{ item.tags }}
+                </span>
+                <span *ngIf="!item.tags" class="text-muted">—</span>
+              </td>
+              <td>
+                <button class="btn btn-sm text-danger p-0 border-0" (click)="deleteEntry(item.id)" title="Delete entry">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

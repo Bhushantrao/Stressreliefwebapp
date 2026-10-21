@@ -1,0 +1,45 @@
+.legend-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.chart-container {
+  background-color: var(--sl-bg-alt);
+  border-radius: var(--sl-radius-md);
+  border: 1px solid var(--sl-border);
+}
+
+.activity-bar {
+  width: 14px;
+  min-height: 4px;
+  transition: height 0.4s ease;
+}
+
+.activity-bar:hover {
+  filter: brightness(1.15);
+}
+
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.modal-dialog-custom {
+  max-width: 580px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}

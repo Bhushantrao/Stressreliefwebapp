@@ -1,0 +1,189 @@
+<div class="journal-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <div class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill small mb-2">
+          <i class="bi bi-shield-lock-fill me-1"></i> Private & Confidential
+        </div>
+        <h1 class="h2 fw-extrabold mb-1">Personal Wellness Journal</h1>
+        <p class="text-muted small mb-0">Externalize mental friction, celebrate micro-victories, and cultivate gratitude in total privacy.</p>
+      </div>
+
+      <!-- Action Button -->
+      <button class="btn btn-sl-primary mt-3 mt-md-0" (click)="openCreateModal()">
+        <i class="bi bi-plus-lg me-1"></i> Write New Entry
+      </button>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="sl-card p-3 mb-4">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-9">
+          <div class="input-group">
+            <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--sl-border);">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control sl-input border-start-0"
+                   placeholder="Search journal entries by title, thoughts, or tags..."
+                   [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+          </div>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button class="btn btn-sl-outline flex-fill" (click)="onSearch()">
+            Search
+          </button>
+          <button *ngIf="searchQuery" class="btn btn-sm btn-outline-secondary" (click)="searchQuery = ''; onSearch()">
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted small mt-2">Loading your journal...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && journals.length === 0" class="text-center py-5">
+      <i class="bi bi-journal-text display-3 text-muted mb-3 d-block"></i>
+      <h4 class="h5 fw-bold">Your Journal is Clear</h4>
+      <p class="text-muted small mb-3">Begin untangling your thoughts by penning your first entry.</p>
+      <button class="btn btn-sl-primary" (click)="openCreateModal()">
+        <i class="bi bi-pencil-square me-1"></i> Write First Entry
+      </button>
+    </div>
+
+    <!-- Journals Grid -->
+    <div class="row g-4 mb-5" *ngIf="!isLoading && journals.length > 0">
+      <div class="col-lg-4 col-md-6" *ngFor="let entry of journals">
+        <div class="sl-card sl-card-hover h-100 d-flex flex-column cursor-pointer" (click)="viewEntry(entry)">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small" *ngIf="entry.moodTag">
+              {{ entry.moodTag }}
+            </span>
+            <span class="text-muted small" style="font-size: 0.75rem;">
+              {{ entry.createdAt | date:'mediumDate' }}
+            </span>
+          </div>
+
+          <h4 class="h6 fw-bold mb-2 text-truncate" style="color: var(--sl-text);">{{ entry.title }}</h4>
+
+          <p class="text-muted small mb-3 flex-grow-1 journal-snippet">
+            {{ entry.content }}
+          </p>
+
+          <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top" style="border-color: var(--sl-border);">
+            <div class="text-muted small text-truncate" style="max-width: 160px; font-size: 0.75rem;">
+              <span *ngIf="entry.tags"><i class="bi bi-tag me-1"></i>{{ entry.tags }}</span>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary p-1 rounded-circle" (click)="openEditModal(entry); $event.stopPropagation()" title="Edit">
+                <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger p-1 rounded-circle" (click)="deleteJournal(entry, $event)" title="Delete">
+                <i class="bi bi-trash" style="font-size: 0.75rem;"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create / Edit Modal Backdrop -->
+    <div class="modal-backdrop-custom" *ngIf="isEditorOpen">
+      <div class="modal-dialog-custom sl-card shadow-lg p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="h5 fw-bold mb-0">
+            {{ editingId ? 'Edit Journal Entry' : 'New Journal Entry' }}
+          </h4>
+          <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="closeEditor()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div *ngIf="editorError" class="alert alert-danger py-2 px-3 small border-0 mb-3">
+          {{ editorError }}
+        </div>
+
+        <form (ngSubmit)="saveJournal()">
+          <div class="mb-3">
+            <label for="jTitle" class="form-label small fw-semibold">Entry Title</label>
+            <input type="text" id="jTitle" class="form-control sl-input"
+                   [(ngModel)]="formTitle" name="title" required placeholder="What is on your mind?">
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="jMood" class="form-label small fw-semibold">Mood / Emotional State Tag</label>
+              <select id="jMood" class="form-select sl-input" [(ngModel)]="formMoodTag" name="moodTag">
+                <option *ngFor="let m of moodTags" [value]="m">{{ m }}</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label for="jTags" class="form-label small fw-semibold">Tags (comma separated)</label>
+              <input type="text" id="jTags" class="form-control sl-input"
+                     [(ngModel)]="formTags" name="tags" placeholder="e.g. gratitude, focus, calm">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="jContent" class="form-label small fw-semibold">Write Your Reflections</label>
+            <textarea id="jContent" class="form-control sl-input" rows="8"
+                      [(ngModel)]="formContent" name="content" required
+                      placeholder="Write freely. Everything you write is encrypted and private to you alone..."></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-sl-outline" (click)="closeEditor()">Cancel</button>
+            <button type="submit" class="btn btn-sl-primary px-4" [disabled]="isSaving">
+              <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ isSaving ? 'Saving Entry...' : (editingId ? 'Update Entry' : 'Save Entry') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- View Entry Reading Drawer Modal -->
+    <div class="modal-backdrop-custom" *ngIf="selectedEntry">
+      <div class="modal-dialog-custom sl-card shadow-lg p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-start mb-3 border-bottom pb-3" style="border-color: var(--sl-border);">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="badge bg-primary-subtle text-primary rounded-pill small" *ngIf="selectedEntry.moodTag">
+                {{ selectedEntry.moodTag }}
+              </span>
+              <span class="text-muted small">{{ selectedEntry.createdAt | date:'fullDate' }}</span>
+            </div>
+            <h3 class="h4 fw-bold mb-0">{{ selectedEntry.title }}</h3>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary rounded-circle" (click)="closeViewer()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="journal-full-body py-3 mb-4 text-secondary" style="white-space: pre-wrap; line-height: 1.8; font-size: 0.98rem;">
+          {{ selectedEntry.content }}
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: var(--sl-border);">
+          <div class="text-muted small">
+            <span *ngIf="selectedEntry.tags"><i class="bi bi-tag me-1"></i>Tags: {{ selectedEntry.tags }}</span>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-sl-outline" (click)="openEditModal(selectedEntry); closeViewer()">
+              <i class="bi bi-pencil me-1"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteJournal(selectedEntry)">
+              <i class="bi bi-trash me-1"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

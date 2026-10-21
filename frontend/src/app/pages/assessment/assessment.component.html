@@ -1,0 +1,239 @@
+<div class="assessment-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <div class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill small mb-2">
+          <i class="bi bi-clipboard2-pulse me-1"></i> Self-Reflection & Mindful Check-in
+        </div>
+        <h1 class="h2 fw-extrabold mb-1">Stress & Well-being Assessment</h1>
+        <p class="text-muted small mb-0">Evaluate your current cognitive load, rest quality, and tension to receive tailored wellness activities.</p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="btn-group mt-3 mt-md-0" role="group">
+        <button type="button" class="btn btn-sm" [ngClass]="activeTab === 'questionnaire' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="activeTab = 'questionnaire'">
+          <i class="bi bi-ui-checks me-1"></i> Questionnaire
+        </button>
+        <button type="button" class="btn btn-sm" [ngClass]="activeTab === 'history' ? 'btn-primary' : 'btn-outline-secondary'"
+                (click)="activeTab = 'history'">
+          <i class="bi bi-clock-history me-1"></i> Past Records ({{ history.length }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Mandatory Medical Disclaimer Notice -->
+    <div class="alert alert-info py-2 px-3 small border-0 d-flex align-items-center gap-2 mb-4"
+         style="background-color: var(--sl-primary-subtle); color: var(--sl-primary); border-left: 4px solid var(--sl-primary) !important;">
+      <i class="bi bi-info-circle-fill fs-5"></i>
+      <div>
+        <strong>Self-Reflection Notice:</strong> This questionnaire is designed solely for personal self-reflection and lifestyle mindfulness. It does <strong>not</strong> provide a medical or clinical psychiatric diagnosis.
+      </div>
+    </div>
+
+    <!-- Result Card View if just completed or available -->
+    <div class="mb-5" *ngIf="latestResult && activeTab === 'questionnaire'">
+      <div class="sl-card shadow-lg border-2"
+           [ngClass]="latestResult.stressLevel === 'LOW' ? 'border-success' : latestResult.stressLevel === 'MODERATE' ? 'border-warning' : 'border-danger'">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-4 text-center border-end-lg py-3">
+            <span class="badge py-2 px-4 rounded-pill text-uppercase fw-bold mb-3"
+                  [ngClass]="latestResult.stressLevel === 'LOW' ? 'badge-stress-low' : latestResult.stressLevel === 'MODERATE' ? 'badge-stress-mod' : 'badge-stress-high'">
+              Reported Stress: {{ latestResult.stressLevel }}
+            </span>
+            <div class="display-3 fw-extrabold mb-1"
+                 [ngClass]="latestResult.stressLevel === 'LOW' ? 'text-success' : latestResult.stressLevel === 'MODERATE' ? 'text-warning' : 'text-danger'">
+              {{ latestResult.stressScore }}<span class="fs-5 text-muted">/100</span>
+            </div>
+            <div class="text-muted small">Wellness Stress Index</div>
+
+            <button class="btn btn-sm btn-sl-outline mt-3" (click)="retakeAssessment()">
+              <i class="bi bi-arrow-repeat me-1"></i> Retake Questionnaire
+            </button>
+          </div>
+
+          <div class="col-lg-8">
+            <h4 class="h5 fw-bold mb-2">Assessment Summary</h4>
+            <p class="text-muted small mb-3">{{ latestResult.summary }}</p>
+
+            <h5 class="fw-bold mb-2 small text-uppercase text-primary">Personalized Recommendations</h5>
+            <ul class="list-unstyled small mb-3">
+              <li *ngFor="let rec of latestResult.recommendations" class="d-flex align-items-center gap-2 mb-1 text-muted">
+                <i class="bi bi-check-circle-fill text-success flex-shrink-0"></i>
+                <span>{{ rec }}</span>
+              </li>
+            </ul>
+
+            <h5 class="fw-bold mb-2 small text-uppercase text-primary">Recommended Practices For You</h5>
+            <div class="d-flex flex-wrap gap-2">
+              <a *ngFor="let act of latestResult.recommendedActivities" routerLink="/breathing" class="btn btn-sm btn-sl-sage">
+                <i class="bi bi-play-circle-fill me-1"></i> {{ act }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Questionnaire Tab -->
+    <div *ngIf="activeTab === 'questionnaire' && !latestResult" class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="sl-card shadow-sm p-4 p-md-5">
+          <div class="mb-4 text-center">
+            <h3 class="h4 fw-bold mb-1">Check In With Yourself</h3>
+            <p class="text-muted small">Rate how you have been experiencing each aspect over the last few days.</p>
+          </div>
+
+          <form (ngSubmit)="submitAssessment()">
+            <!-- Question 1: Sleep -->
+            <div class="question-block mb-4 p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold small mb-0">1. Sleep Quality & Restfulness</label>
+                <span class="badge bg-primary rounded-pill">{{ sleepRating }} / 5</span>
+              </div>
+              <p class="text-muted small mb-2">How deeply and restfully have you been sleeping?</p>
+              <input type="range" class="form-range" min="1" max="5" step="1" [(ngModel)]="sleepRating" name="sleepRating">
+              <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span>1 - Very poor / Insomnia</span>
+                <span>3 - Average</span>
+                <span>5 - Restful & Refreshing</span>
+              </div>
+            </div>
+
+            <!-- Question 2: Workload -->
+            <div class="question-block mb-4 p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold small mb-0">2. Workload & Academic / Task Pressure</label>
+                <span class="badge bg-primary rounded-pill">{{ workloadRating }} / 5</span>
+              </div>
+              <p class="text-muted small mb-2">How heavy or demanding is your current workload?</p>
+              <input type="range" class="form-range" min="1" max="5" step="1" [(ngModel)]="workloadRating" name="workloadRating">
+              <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span>1 - Very manageable</span>
+                <span>3 - Moderate</span>
+                <span>5 - Overwhelming</span>
+              </div>
+            </div>
+
+            <!-- Question 3: Mood -->
+            <div class="question-block mb-4 p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold small mb-0">3. General Mood & Emotional Balance</label>
+                <span class="badge bg-primary rounded-pill">{{ moodRating }} / 5</span>
+              </div>
+              <p class="text-muted small mb-2">How has your emotional headspace felt recently?</p>
+              <input type="range" class="form-range" min="1" max="5" step="1" [(ngModel)]="moodRating" name="moodRating">
+              <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span>1 - Low / Down</span>
+                <span>3 - Neutral</span>
+                <span>5 - Calm & Joyful</span>
+              </div>
+            </div>
+
+            <!-- Question 4: Tension -->
+            <div class="question-block mb-4 p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold small mb-0">4. Physical Tension & Clenched Muscles</label>
+                <span class="badge bg-primary rounded-pill">{{ tensionRating }} / 5</span>
+              </div>
+              <p class="text-muted small mb-2">Are you holding physical stiffness in your shoulders, jaw, or neck?</p>
+              <input type="range" class="form-range" min="1" max="5" step="1" [(ngModel)]="tensionRating" name="tensionRating">
+              <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span>1 - Completely relaxed</span>
+                <span>3 - Moderate tightness</span>
+                <span>5 - Severe tension</span>
+              </div>
+            </div>
+
+            <!-- Question 5: Concentration -->
+            <div class="question-block mb-4 p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold small mb-0">5. Cognitive Focus & Mental Clarity</label>
+                <span class="badge bg-primary rounded-pill">{{ concentrationRating }} / 5</span>
+              </div>
+              <p class="text-muted small mb-2">How easily can you focus without racing thoughts or mental fog?</p>
+              <input type="range" class="form-range" min="1" max="5" step="1" [(ngModel)]="concentrationRating" name="concentrationRating">
+              <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span>1 - Easily distracted</span>
+                <span>3 - Moderate focus</span>
+                <span>5 - Sharp & clear</span>
+              </div>
+            </div>
+
+            <!-- Question 6: Energy -->
+            <div class="question-block mb-4 p-3 rounded-3" style="background-color: var(--sl-bg-alt);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="fw-bold small mb-0">6. Physical Vitality & Energy</label>
+                <span class="badge bg-primary rounded-pill">{{ energyRating }} / 5</span>
+              </div>
+              <p class="text-muted small mb-2">How energized do you feel throughout your day?</p>
+              <input type="range" class="form-range" min="1" max="5" step="1" [(ngModel)]="energyRating" name="energyRating">
+              <div class="d-flex justify-content-between text-muted" style="font-size: 0.75rem;">
+                <span>1 - Depleted / Exhausted</span>
+                <span>3 - Moderate</span>
+                <span>5 - Vibrant & Energized</span>
+              </div>
+            </div>
+
+            <!-- Optional Notes -->
+            <div class="mb-4">
+              <label for="assessmentNotes" class="form-label small fw-semibold">Personal Context / Trigger Notes (Optional)</label>
+              <textarea id="assessmentNotes" name="notes" class="form-control sl-input" rows="2"
+                        [(ngModel)]="notes" placeholder="e.g. Upcoming semester exams, project release deadline..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-sl-primary btn-lg w-100 py-3" [disabled]="isSubmitting">
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ isSubmitting ? 'Evaluating Responses...' : 'Calculate My Wellness Report' }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Tab -->
+    <div *ngIf="activeTab === 'history'">
+      <div class="sl-card shadow-sm">
+        <h3 class="h5 fw-bold mb-3">Past Assessment Timeline</h3>
+
+        <div *ngIf="history.length === 0" class="text-center py-5 text-muted small">
+          No past assessments found. Take your first assessment to establish a baseline!
+        </div>
+
+        <div class="table-responsive" *ngIf="history.length > 0">
+          <table class="table table-hover align-middle">
+            <thead class="table-light small">
+              <tr>
+                <th>Date</th>
+                <th>Stress Score</th>
+                <th>Reported Level</th>
+                <th>Recommended Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of history">
+                <td class="small">{{ item.assessedAt | date:'mediumDate' }}</td>
+                <td>
+                  <span class="fw-bold fs-6"
+                        [ngClass]="item.stressLevel === 'LOW' ? 'text-success' : item.stressLevel === 'MODERATE' ? 'text-warning' : 'text-danger'">
+                    {{ item.stressScore }}/100
+                  </span>
+                </td>
+                <td>
+                  <span class="badge rounded-pill text-uppercase"
+                        [ngClass]="item.stressLevel === 'LOW' ? 'badge-stress-low' : item.stressLevel === 'MODERATE' ? 'badge-stress-mod' : 'badge-stress-high'">
+                    {{ item.stressLevel }}
+                  </span>
+                </td>
+                <td class="small text-muted">
+                  {{ item.recommendations[0] || 'Take regular breathing breaks.' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,231 @@
+<div class="landing-page">
+  <!-- Hero Section -->
+  <section class="hero-section py-5 position-relative overflow-hidden gradient-bg-hero">
+    <div class="container py-lg-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-semibold mb-3">
+            <i class="bi bi-stars me-1"></i> Mental Wellness & Stress Relief Platform
+          </div>
+
+          <h1 class="display-4 fw-extrabold mb-3">
+            Breathe easy. <br>
+            <span class="gradient-text-primary">Stress Less.</span> Live Mindfully.
+          </h1>
+
+          <p class="lead text-muted mb-4">
+            An evidence-informed digital sanctuary crafted for students and working professionals. Master daily stress with guided breathing exercises, ambient soundscapes, emotional check-ins, and personal reflection.
+          </p>
+
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <a *ngIf="!isLoggedIn" routerLink="/register" class="btn btn-sl-primary btn-lg shadow-sm px-4">
+              <i class="bi bi-sparkles me-2"></i> Start Free Today
+            </a>
+            <a *ngIf="isLoggedIn" routerLink="/dashboard" class="btn btn-sl-primary btn-lg shadow-sm px-4">
+              <i class="bi bi-grid-1x2-fill me-2"></i> Go to Dashboard
+            </a>
+            <a routerLink="/breathing" class="btn btn-sl-outline btn-lg px-4">
+              <i class="bi bi-play-circle me-2"></i> Try Breathing Exercise
+            </a>
+          </div>
+
+          <div class="d-flex align-items-center gap-3 pt-2 text-muted small">
+            <span class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-1"></i> 100% Free & Private</span>
+            <span class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-1"></i> No Credit Card</span>
+            <span class="d-flex align-items-center"><i class="bi bi-check-circle-fill text-success me-1"></i> Encrypted Journals</span>
+          </div>
+        </div>
+
+        <div class="col-lg-6 text-center">
+          <div class="hero-visual-card position-relative p-4 mx-auto">
+            <!-- Animated Breathing Preview Orb -->
+            <div class="hero-orb-container mb-4">
+              <div class="hero-orb pulse-glow">
+                <i class="bi bi-flower1 fs-1 text-white"></i>
+              </div>
+            </div>
+
+            <!-- Quote Badge inside card -->
+            <div class="hero-quote-card p-3 rounded-4 shadow-sm text-start">
+              <div class="d-flex align-items-center gap-2 mb-2 text-primary small fw-bold text-uppercase">
+                <i class="bi bi-quote fs-5"></i> Daily Anchor
+              </div>
+              <p class="fst-italic mb-1 text-secondary" style="font-size: 0.95rem;">
+                "{{ dailyQuote.quoteText }}"
+              </p>
+              <div class="text-end small fw-bold text-muted">— {{ dailyQuote.author }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Pillars / Feature Showcase -->
+  <section class="py-5 bg-card border-top border-bottom">
+    <div class="container py-4">
+      <div class="text-center max-w-700 mx-auto mb-5">
+        <h2 class="h1 fw-bold mb-3">Six Pillars of Holistic Peace</h2>
+        <p class="text-muted">Designed systematically to target mental tension, physical overwhelm, and restless cognitive fatigue.</p>
+      </div>
+
+      <div class="row g-4">
+        <!-- 1. Guided Breathing -->
+        <div class="col-md-6 col-lg-4">
+          <div class="sl-card sl-card-hover h-100 d-flex flex-column">
+            <div class="feature-icon-badge bg-primary-subtle text-primary mb-3">
+              <i class="bi bi-wind"></i>
+            </div>
+            <h4 class="h5 fw-bold mb-2">Guided Breathing</h4>
+            <p class="text-muted small mb-3 flex-grow-1">
+              Interactive Box Breathing (4-4-4-4) and slow-paced resonant breathing with smooth pulsating visual guides to quickly lower cortisol.
+            </p>
+            <a routerLink="/breathing" class="text-primary fw-semibold small text-decoration-none">
+              Start Breathing Practice <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 2. Guided Meditation -->
+        <div class="col-md-6 col-lg-4">
+          <div class="sl-card sl-card-hover h-100 d-flex flex-column">
+            <div class="feature-icon-badge bg-success-subtle text-success mb-3">
+              <i class="bi bi-flower1"></i>
+            </div>
+            <h4 class="h5 fw-bold mb-2">Mindful Meditation</h4>
+            <p class="text-muted small mb-3 flex-grow-1">
+              Curated sessions targeting morning clarity, mid-day desk tension, evening sleep relaxation, and anxiety de-escalation.
+            </p>
+            <a routerLink="/meditation" class="text-success fw-semibold small text-decoration-none">
+              Explore Guided Sessions <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3. Relaxing Nature Sounds -->
+        <div class="col-md-6 col-lg-4">
+          <div class="sl-card sl-card-hover h-100 d-flex flex-column">
+            <div class="feature-icon-badge bg-purple-subtle text-purple mb-3" style="background-color: var(--sl-lavender-subtle); color: var(--sl-lavender);">
+              <i class="bi bi-music-note-beamed"></i>
+            </div>
+            <h4 class="h5 fw-bold mb-2">Soundscapes & Music</h4>
+            <p class="text-muted small mb-3 flex-grow-1">
+              High-definition rainfall, coastal tide rhythms, pine forest breezes, warm campfires, and 432 Hz healing binaural harmonics.
+            </p>
+            <a routerLink="/music" class="text-purple fw-semibold small text-decoration-none" style="color: var(--sl-lavender);">
+              Listen to Soundscapes <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4. Stress Assessment -->
+        <div class="col-md-6 col-lg-4">
+          <div class="sl-card sl-card-hover h-100 d-flex flex-column">
+            <div class="feature-icon-badge bg-warning-subtle text-warning mb-3">
+              <i class="bi bi-clipboard2-pulse"></i>
+            </div>
+            <h4 class="h5 fw-bold mb-2">Stress Self-Assessment</h4>
+            <p class="text-muted small mb-3 flex-grow-1">
+              Answer 6 targeted questions on sleep, workload, and physical tension to receive an actionable wellness score and personalized regimen.
+            </p>
+            <a routerLink="/assessment" class="text-warning fw-semibold small text-decoration-none">
+              Take Free Assessment <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 5. Mood Tracker -->
+        <div class="col-md-6 col-lg-4">
+          <div class="sl-card sl-card-hover h-100 d-flex flex-column">
+            <div class="feature-icon-badge bg-info-subtle text-info mb-3">
+              <i class="bi bi-emoji-smile"></i>
+            </div>
+            <h4 class="h5 fw-bold mb-2">Daily Mood Check-ins</h4>
+            <p class="text-muted small mb-3 flex-grow-1">
+              Track emotional fluctuations and energy levels across weekly and monthly timelines with automatic pattern insights.
+            </p>
+            <a routerLink="/mood" class="text-info fw-semibold small text-decoration-none">
+              Track Daily Mood <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 6. Personal Journal -->
+        <div class="col-md-6 col-lg-4">
+          <div class="sl-card sl-card-hover h-100 d-flex flex-column">
+            <div class="feature-icon-badge bg-danger-subtle text-danger mb-3">
+              <i class="bi bi-journal-bookmark"></i>
+            </div>
+            <h4 class="h5 fw-bold mb-2">Private Journal</h4>
+            <p class="text-muted small mb-3 flex-grow-1">
+              Safe, confidential personal journal with mood tags and instant search. Your entries remain strictly isolated and private.
+            </p>
+            <a routerLink="/journal" class="text-danger fw-semibold small text-decoration-none">
+              Open Your Journal <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Steps -->
+  <section class="py-5">
+    <div class="container py-4">
+      <div class="text-center max-w-700 mx-auto mb-5">
+        <h2 class="h1 fw-bold mb-3">A Simple 3-Step Daily Routine</h2>
+        <p class="text-muted">Small mindful pauses compound into lasting resilience and lower baseline anxiety.</p>
+      </div>
+
+      <div class="row g-4 text-center">
+        <div class="col-md-4">
+          <div class="p-4 rounded-4" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+            <div class="step-number mb-3">1</div>
+            <h4 class="h5 fw-bold mb-2">Morning Check-In</h4>
+            <p class="text-muted small mb-0">Start by rating your morning mood and taking a 3-minute slow-paced breathing session before opening emails.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-4 rounded-4" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+            <div class="step-number mb-3">2</div>
+            <h4 class="h5 fw-bold mb-2">Mid-Day Reset</h4>
+            <p class="text-muted small mb-0">Whenever stress spikes, turn on gentle rain soundscapes and perform 4-4-4-4 box breathing to restore focus.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-4 rounded-4" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+            <div class="step-number mb-3">3</div>
+            <h4 class="h5 fw-bold mb-2">Evening Reflection</h4>
+            <p class="text-muted small mb-0">Journal three thoughts or wins from the day, view your wellness streak, and unwind with progressive sleep relaxation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="py-5 mb-5">
+    <div class="container">
+      <div class="p-5 rounded-4 text-center text-white position-relative overflow-hidden shadow-lg"
+           style="background: linear-gradient(135deg, #1e3a8a, #3b82f6, #8b5cf6);">
+        <div class="position-relative z-1 max-w-700 mx-auto">
+          <h2 class="display-6 fw-bold mb-3 text-white">Give Your Mind the Space It Deserves</h2>
+          <p class="lead mb-4 text-white-50">Join thousands of students and working professionals managing daily pressure with StressLess.</p>
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a *ngIf="!isLoggedIn" routerLink="/register" class="btn btn-light btn-lg text-primary fw-bold px-4 py-2 rounded-pill shadow">
+              Create Your Free Account
+            </a>
+            <a *ngIf="isLoggedIn" routerLink="/dashboard" class="btn btn-light btn-lg text-primary fw-bold px-4 py-2 rounded-pill shadow">
+              Open Your Dashboard
+            </a>
+            <a routerLink="/assessment" class="btn btn-outline-light btn-lg fw-semibold px-4 py-2 rounded-pill">
+              Take Free Assessment
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

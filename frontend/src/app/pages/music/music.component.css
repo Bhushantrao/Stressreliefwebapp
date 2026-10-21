@@ -1,0 +1,31 @@
+.sound-card {
+  border: 1.5px solid var(--sl-border);
+  transition: all 0.25s ease;
+}
+
+.sound-card.active-sound {
+  border-color: var(--sl-primary) !important;
+  background-color: var(--sl-primary-subtle);
+}
+
+.sound-icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.category-rain { background: #dbeafe; color: #2563eb; }
+.category-ocean { background: #cffafe; color: #0891b2; }
+.category-forest { background: #d1fae5; color: #059669; }
+.category-night { background: #ffedd5; color: #ea580c; }
+.category-piano { background: #f3e8ff; color: #7c3aed; }
+.category-meditation_music { background: #fae8ff; color: #c026d3; }
+
+.volume-slider-box {
+  border: 1px solid var(--sl-border);
+}

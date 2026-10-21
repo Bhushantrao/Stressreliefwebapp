@@ -1,0 +1,96 @@
+<div class="music-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <div class="badge bg-purple-subtle text-purple border px-3 py-1 rounded-pill small mb-2"
+             style="background-color: var(--sl-lavender-subtle); color: var(--sl-lavender); border-color: var(--sl-lavender-border) !important;">
+          <i class="bi bi-music-note-beamed me-1"></i> Audio Therapy & Soundscapes
+        </div>
+        <h1 class="h2 fw-extrabold mb-1">Relaxing Music & Ambient Sounds</h1>
+        <p class="text-muted small mb-0">Mix and match natural soundscapes, soothing piano, and binaural frequencies to create your personal focus or sleep sanctuary.</p>
+      </div>
+
+      <!-- Master Audio Controls -->
+      <div class="d-flex align-items-center gap-3 mt-3 mt-md-0" *ngIf="activeTracksCount > 0">
+        <div class="d-flex align-items-center gap-1 small text-primary fw-semibold">
+          <span class="equalizer-bar"></span>
+          <span class="equalizer-bar"></span>
+          <span class="equalizer-bar"></span>
+          <span class="equalizer-bar"></span>
+          <span class="ms-1">{{ activeTracksCount }} Playing</span>
+        </div>
+        <button class="btn btn-sm btn-outline-danger rounded-pill px-3" (click)="stopAll()">
+          <i class="bi bi-stop-circle me-1"></i> Mute All
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-muted small mt-2">Loading calming soundscapes...</p>
+    </div>
+
+    <!-- Sound Cards Grid -->
+    <div class="row g-4 mb-5" *ngIf="!isLoading">
+      <div class="col-lg-4 col-md-6" *ngFor="let t of tracks">
+        <div class="sl-card h-100 transition-all sound-card"
+             [ngClass]="{ 'active-sound shadow-lg': t.isPlaying }">
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <!-- Sound Icon -->
+            <div class="sound-icon-circle" [ngClass]="'category-' + t.category.toLowerCase()">
+              <i class="bi"
+                 [ngClass]="t.category === 'RAIN' ? 'bi-cloud-rain-fill' :
+                            t.category === 'OCEAN' ? 'bi-water' :
+                            t.category === 'FOREST' ? 'bi-tree-fill' :
+                            t.category === 'NIGHT' ? 'bi-fire' :
+                            t.category === 'PIANO' ? 'bi-music-note-beamed' : 'bi-soundwave'"></i>
+            </div>
+
+            <!-- Title & Category -->
+            <div class="flex-grow-1 overflow-hidden">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge bg-light text-muted border rounded-pill small" style="font-size: 0.7rem;">
+                  {{ t.category }}
+                </span>
+                <span *ngIf="t.isPlaying" class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small" style="font-size: 0.7rem;">
+                  <i class="bi bi-broadcast me-1"></i> Live
+                </span>
+              </div>
+              <h4 class="h6 fw-bold mb-0 text-truncate mt-1" style="color: var(--sl-text);">{{ t.title }}</h4>
+            </div>
+          </div>
+
+          <!-- Play / Pause Action Button -->
+          <div class="mb-3">
+            <button type="button" class="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2 rounded-pill font-weight-semibold"
+                    [ngClass]="t.isPlaying ? 'btn-primary shadow-sm' : 'btn-sl-outline'"
+                    (click)="toggleTrack(t)">
+              <i class="bi" [ngClass]="t.isPlaying ? 'bi-pause-circle-fill fs-5' : 'bi-play-circle-fill fs-5'"></i>
+              <span>{{ t.isPlaying ? 'Pause Sound' : 'Play Sound' }}</span>
+            </button>
+          </div>
+
+          <!-- Volume Slider -->
+          <div class="volume-slider-box p-2 rounded-3" style="background-color: var(--sl-bg-alt);">
+            <div class="d-flex justify-content-between align-items-center small text-muted mb-1" style="font-size: 0.75rem;">
+              <span><i class="bi bi-volume-down me-1"></i> Volume</span>
+              <span>{{ Math.round(t.volume * 100) }}%</span>
+            </div>
+            <input type="range" class="form-range" min="0" max="1" step="0.05"
+                   [(ngModel)]="t.volume" (ngModelChange)="onVolumeChange(t)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sound Therapy Guidelines Box -->
+    <div class="p-4 rounded-4 mb-4" style="background-color: var(--sl-bg-card); border: 1px solid var(--sl-border);">
+      <h5 class="fw-bold fs-6 mb-2"><i class="bi bi-lightbulb-fill text-warning me-2"></i> How to Use Sound Layering</h5>
+      <p class="text-muted small mb-0">
+        You can play multiple tracks simultaneously! For optimal deep focus, mix <strong>Gentle Summer Rain (50%)</strong> with <strong>Calm Piano (70%)</strong>. For sleep preparation, combine <strong>Midnight Campfire</strong> with the <strong>432 Hz Binaural Drone</strong>.
+      </p>
+    </div>
+  </div>
+</div>

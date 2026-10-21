@@ -1,0 +1,76 @@
+<div class="login-wrapper py-5 d-flex align-items-center min-vh-100">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-5">
+        <div class="sl-card shadow-lg p-4 p-sm-5">
+          <!-- Logo & Header -->
+          <div class="text-center mb-4">
+            <div class="login-logo-circle mb-3 mx-auto">
+              <i class="bi bi-flower1"></i>
+            </div>
+            <h2 class="h3 fw-bold mb-1">Welcome Back</h2>
+            <p class="text-muted small">Log in to continue your mental wellness journey</p>
+          </div>
+
+          <!-- Error Alert -->
+          <div *ngIf="errorMessage" class="alert alert-danger py-2 px-3 small border-0 d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+
+          <!-- Login Form -->
+          <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            <div class="mb-3">
+              <label for="email" class="form-label small fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--sl-border);">
+                  <i class="bi bi-envelope"></i>
+                </span>
+                <input type="email" id="email" name="email" class="form-control sl-input border-start-0"
+                       [(ngModel)]="email" required placeholder="name@example.com">
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label for="password" class="form-label small fw-semibold mb-0">Password</label>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--sl-border);">
+                  <i class="bi bi-lock"></i>
+                </span>
+                <input type="password" id="password" name="password" class="form-control sl-input border-start-0"
+                       [(ngModel)]="password" required placeholder="Enter your password">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-sl-primary w-100 py-2 mb-3" [disabled]="isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ isLoading ? 'Signing In...' : 'Sign In' }}
+            </button>
+          </form>
+
+          <!-- Quick Fill Demo Buttons -->
+          <div class="demo-login-box p-3 rounded-3 mt-3 mb-4">
+            <div class="text-muted small fw-semibold mb-2 text-center">
+              <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Test Credentials:
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary flex-fill" (click)="fillDemoUser()">
+                <i class="bi bi-person me-1"></i> Demo User
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary flex-fill" (click)="fillDemoAdmin()">
+                <i class="bi bi-shield-lock me-1"></i> Administrator
+              </button>
+            </div>
+          </div>
+
+          <div class="text-center small text-muted">
+            Don't have an account yet?
+            <a routerLink="/register" class="text-primary fw-bold text-decoration-none ms-1">Create an account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

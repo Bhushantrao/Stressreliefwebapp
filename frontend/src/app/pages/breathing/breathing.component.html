@@ -1,0 +1,172 @@
+<div class="breathing-page py-4">
+  <div class="container">
+    <!-- Header -->
+    <div class="text-center max-w-700 mx-auto mb-4">
+      <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill small mb-2">
+        <i class="bi bi-wind me-1"></i> Autonomic Nervous System Regulator
+      </div>
+      <h1 class="h2 fw-extrabold mb-1">Guided Breathing Exercises</h1>
+      <p class="text-muted small">Synchronize your respiration to rapidly slow your heart rate, quiet mental noise, and restore composure.</p>
+    </div>
+
+    <!-- Saved Notice -->
+    <div *ngIf="savedSessionNotice" class="alert alert-success alert-dismissible fade show text-center py-2 px-3 small border-0 max-w-700 mx-auto mb-4">
+      <i class="bi bi-check-circle-fill me-1"></i> Breathing session saved to your daily wellness streak!
+    </div>
+
+    <!-- Main Workspace Row -->
+    <div class="row g-4 justify-content-center">
+      <!-- Left Column: Controls & Technique Info -->
+      <div class="col-lg-4 col-md-5">
+        <div class="sl-card mb-4">
+          <h5 class="fw-bold fs-6 mb-3">1. Select Technique</h5>
+          <div class="d-flex flex-column gap-2 mb-4">
+            <button *ngFor="let tech of techniques" type="button"
+                    class="btn text-start p-3 rounded-3 technique-card border transition-all"
+                    [ngClass]="selectedTechnique.technique === tech.technique ? 'selected-tech shadow-sm' : 'bg-alt'"
+                    (click)="selectTechnique(tech)">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="fw-bold small">{{ tech.name }}</span>
+                <span *ngIf="selectedTechnique.technique === tech.technique" class="badge bg-primary rounded-pill">Active</span>
+              </div>
+              <p class="text-muted small mb-0" style="font-size: 0.8rem;">{{ tech.description }}</p>
+            </button>
+          </div>
+
+          <h5 class="fw-bold fs-6 mb-2">2. Target Session Duration</h5>
+          <div class="d-flex gap-2 flex-wrap mb-4">
+            <button *ngFor="let mins of [1, 2, 3, 5, 10]" type="button"
+                    class="btn btn-sm flex-fill"
+                    [ngClass]="selectedDurationMinutes === mins ? 'btn-primary' : 'btn-outline-secondary'"
+                    [disabled]="state === 'RUNNING' || state === 'PAUSED'"
+                    (click)="selectedDurationMinutes = mins">
+              {{ mins }} min
+            </button>
+          </div>
+
+          <div class="p-3 rounded-3" style="background-color: var(--sl-bg-alt); border: 1px solid var(--sl-border);">
+            <div class="fw-bold small mb-1"><i class="bi bi-lightbulb-fill text-warning me-1"></i> Breathing Tip</div>
+            <p class="text-muted small mb-0" style="font-size: 0.8rem;">
+              Drop your shoulders away from your ears. Expand your lower ribs on the inhale and soften your abdominal muscles on the exhale.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center / Right Column: The Breathing Arena -->
+      <div class="col-lg-6 col-md-7">
+        <div class="sl-card arena-card text-center p-4 p-md-5 d-flex flex-column justify-content-between">
+          <!-- Top Session Stats -->
+          <div class="d-flex justify-content-between align-items-center small text-muted mb-4 border-bottom pb-3" style="border-color: var(--sl-border);">
+            <div>
+              <span class="text-uppercase fw-semibold">Technique:</span>
+              <strong class="text-primary ms-1">{{ selectedTechnique.name }}</strong>
+            </div>
+            <div>
+              <span class="text-uppercase fw-semibold">Cycles:</span>
+              <strong class="ms-1">{{ cyclesCompleted }}</strong>
+            </div>
+            <div>
+              <span class="text-uppercase fw-semibold">Time:</span>
+              <strong class="ms-1">{{ formatTime(totalSecondsElapsed) }} / {{ selectedDurationMinutes }}:00</strong>
+            </div>
+          </div>
+
+          <!-- Animated Breathing Orb Arena -->
+          <div class="breathing-stage py-4 position-relative d-flex justify-content-center align-items-center">
+            <!-- Ambient Ripple Rings -->
+            <div class="ripple-ring ring-3" [style.transform]="'scale(' + scaleRatio * 1.35 + ')'"></div>
+            <div class="ripple-ring ring-2" [style.transform]="'scale(' + scaleRatio * 1.18 + ')'"></div>
+
+            <!-- Main Orb -->
+            <div class="breathing-orb shadow-lg"
+                 [style.transform]="'scale(' + scaleRatio + ')'"
+                 [ngClass]="'phase-' + currentPhase.toLowerCase()">
+              <div class="orb-content text-white">
+                <div class="phase-title text-uppercase fw-extrabold letter-spacing-1">
+                  {{ currentPhase === 'READY' ? 'READY' : currentPhase }}
+                </div>
+                <div class="phase-seconds display-4 fw-bold" *ngIf="state === 'RUNNING' || state === 'PAUSED'">
+                  {{ phaseSecondsLeft }}
+                </div>
+                <div class="phase-action text-white-50 small mt-1" *ngIf="state === 'RUNNING'">
+                  <span *ngIf="currentPhase === 'INHALE'">Inhale gently through nose</span>
+                  <span *ngIf="currentPhase === 'HOLD'">Hold stillness</span>
+                  <span *ngIf="currentPhase === 'EXHALE'">Release smoothly through mouth</span>
+                  <span *ngIf="currentPhase === 'REST'">Pause and rest</span>
+                </div>
+                <div *ngIf="state === 'IDLE'" class="small text-white-50 mt-1">Press Start to Begin</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls Section -->
+          <div class="controls-area mt-4">
+            <!-- Idle State Button -->
+            <button *ngIf="state === 'IDLE' || state === 'COMPLETED'"
+                    type="button" class="btn btn-sl-primary btn-lg px-5 py-3 shadow"
+                    (click)="startSession()">
+              <i class="bi bi-play-fill fs-5 me-2"></i> Start Breathing
+            </button>
+
+            <!-- Running State Buttons -->
+            <div *ngIf="state === 'RUNNING'" class="d-flex justify-content-center gap-3">
+              <button type="button" class="btn btn-sl-outline btn-lg px-4" (click)="pauseSession()">
+                <i class="bi bi-pause-fill me-1"></i> Pause
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-lg px-4 rounded-pill" (click)="stopSession()">
+                <i class="bi bi-stop-fill me-1"></i> Stop & Save
+              </button>
+            </div>
+
+            <!-- Paused State Buttons -->
+            <div *ngIf="state === 'PAUSED'" class="d-flex justify-content-center gap-3">
+              <button type="button" class="btn btn-sl-primary btn-lg px-4" (click)="resumeSession()">
+                <i class="bi bi-play-fill me-1"></i> Resume
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-lg px-4 rounded-pill" (click)="stopSession()">
+                <i class="bi bi-stop-fill me-1"></i> End Session
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breathing History Section -->
+    <div class="mt-5 max-w-900 mx-auto">
+      <div class="sl-card">
+        <h5 class="fw-bold fs-6 mb-3">Recent Breathing Sessions</h5>
+
+        <div *ngIf="history.length === 0" class="text-center py-4 text-muted small">
+          No breathing sessions recorded yet. Complete your first session above!
+        </div>
+
+        <div class="table-responsive" *ngIf="history.length > 0">
+          <table class="table table-hover align-middle small mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Date & Time</th>
+                <th>Technique</th>
+                <th>Duration</th>
+                <th>Cycles Completed</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of history.slice(0, 8)">
+                <td class="text-muted">{{ item.completedAt | date:'medium' }}</td>
+                <td>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                    {{ item.technique.replace('_', ' ') }}
+                  </span>
+                </td>
+                <td class="fw-semibold">{{ Math.round(item.durationSeconds / 60) }} mins ({{ item.durationSeconds }}s)</td>
+                <td>{{ item.cyclesCompleted }} cycles</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
